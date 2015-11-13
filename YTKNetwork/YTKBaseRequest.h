@@ -25,6 +25,7 @@
 #import "AFNetworking.h"
 #import "AFDownloadRequestOperation.h"
 
+//  请求方式
 typedef NS_ENUM(NSInteger , YTKRequestMethod) {
     YTKRequestMethodGet = 0,
     YTKRequestMethodPost,
@@ -34,6 +35,7 @@ typedef NS_ENUM(NSInteger , YTKRequestMethod) {
     YTKRequestMethodPatch
 };
 
+//  序列化方式
 typedef NS_ENUM(NSInteger , YTKRequestSerializerType) {
     YTKRequestSerializerTypeHTTP = 0,
     YTKRequestSerializerTypeJSON,
@@ -42,8 +44,9 @@ typedef NS_ENUM(NSInteger , YTKRequestSerializerType) {
 typedef void (^AFConstructingBlock)(id<AFMultipartFormData> formData);
 typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, NSInteger bytesRead, long long totalBytesRead, long long totalBytesExpected, long long totalBytesReadForFile, long long totalBytesExpectedToReadForFile);
 
-@class YTKBaseRequest;
+#pragma mark - YTKRequestDelegate
 
+@class YTKBaseRequest;
 @protocol YTKRequestDelegate <NSObject>
 
 @optional
@@ -54,6 +57,8 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 
 @end
 
+#pragma mark - YTKRequestAccessory
+
 @protocol YTKRequestAccessory <NSObject>
 
 @optional
@@ -63,6 +68,8 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 - (void)requestDidStop:(id)request;
 
 @end
+
+#pragma mark -
 
 @interface YTKBaseRequest : NSObject
 
@@ -77,7 +84,6 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 /// request delegate object
 @property (nonatomic, weak) id<YTKRequestDelegate> delegate;
 
-
 @property (nonatomic, strong, readonly) NSDictionary *responseHeaders;
 
 @property (nonatomic, strong, readonly) NSString *responseString;
@@ -91,6 +97,8 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 @property (nonatomic, copy) void (^failureCompletionBlock)(YTKBaseRequest *);
 
 @property (nonatomic, strong) NSMutableArray *requestAccessories;
+
+#pragma mark -
 
 /// append self to request queue
 - (void)start;
@@ -112,6 +120,8 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 
 /// Request Accessory，可以hook Request的start和stop
 - (void)addAccessory:(id<YTKRequestAccessory>)accessory;
+
+#pragma mark - 以下方法由子类继承来覆盖默认值
 
 /// 以下方法由子类继承来覆盖默认值
 
@@ -149,6 +159,9 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 - (NSArray *)requestAuthorizationHeaderFieldArray;
 
 /// 在HTTP报头添加的自定义参数
+/*
+ 通过覆盖requestHeaderFieldValueDictionary方法返回一个dictionary对象来自定义请求的HeaderField，返回的dictionary，其key即为HeaderField的key，value为HeaderField的Value，需要注意的是key和value都必须为string对象。
+ */
 - (NSDictionary *)requestHeaderFieldValueDictionary;
 
 /// 构建自定义的UrlRequest，

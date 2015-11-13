@@ -8,12 +8,13 @@
 
 /* Begin PBXBuildFile section */
 		451C59DA1B27F37C00AAC845 /* YTKJSONValidatorTests.m in Sources */ = {isa = PBXBuildFile; fileRef = 451C59D91B27F37C00AAC845 /* YTKJSONValidatorTests.m */; };
-		457AD4041A8E45AB000E8B41 /* YTKBatchRequestAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = 457AD4031A8E45AB000E8B41 /* YTKBatchRequestAgent.m */; };
 		45AB19C11A4656A600680858 /* YTKUrlArgumentsFilter.m in Sources */ = {isa = PBXBuildFile; fileRef = 45AB19C01A4656A600680858 /* YTKUrlArgumentsFilter.m */; };
 		45BF1D401A0DC0A100DDB7E0 /* RegisterApi.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BF1D3F1A0DC0A100DDB7E0 /* RegisterApi.m */; };
 		45BF1D431A0DC40F00DDB7E0 /* GetUserInfoApi.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BF1D421A0DC40F00DDB7E0 /* GetUserInfoApi.m */; };
 		45BF1D461A0DC66E00DDB7E0 /* GetImageApi.m in Sources */ = {isa = PBXBuildFile; fileRef = 45BF1D451A0DC66E00DDB7E0 /* GetImageApi.m */; };
 		45F710841A466D01001957BA /* UploadImageApi.m in Sources */ = {isa = PBXBuildFile; fileRef = 45F710831A466D01001957BA /* UploadImageApi.m */; };
+		6450028A1BF5D83B00ABD638 /* Usage.md in Sources */ = {isa = PBXBuildFile; fileRef = 645002891BF5D83B00ABD638 /* Usage.md */; };
+		645002931BF5E8C300ABD638 /* CustomApi.m in Sources */ = {isa = PBXBuildFile; fileRef = 645002921BF5E8C300ABD638 /* CustomApi.m */; };
 		BF007FD919FF972C00816462 /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = BF007FD819FF972C00816462 /* main.m */; };
 		BF007FDC19FF972C00816462 /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = BF007FDB19FF972C00816462 /* AppDelegate.m */; };
 		BF007FDF19FF972C00816462 /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = BF007FDE19FF972C00816462 /* ViewController.m */; };
@@ -22,9 +23,6 @@
 		BF007FE719FF972C00816462 /* LaunchScreen.xib in Resources */ = {isa = PBXBuildFile; fileRef = BF007FE519FF972C00816462 /* LaunchScreen.xib */; };
 		BF007FF319FF972C00816462 /* YTKNetworkDemoTests.m in Sources */ = {isa = PBXBuildFile; fileRef = BF007FF219FF972C00816462 /* YTKNetworkDemoTests.m */; };
 		BF00800D19FF988A00816462 /* YTKBaseRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = BF007FFE19FF988A00816462 /* YTKBaseRequest.m */; };
-		BF00800F19FF988A00816462 /* YTKBatchRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = BF00800219FF988A00816462 /* YTKBatchRequest.m */; };
-		BF00801019FF988A00816462 /* YTKChainRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = BF00800419FF988A00816462 /* YTKChainRequest.m */; };
-		BF00801119FF988A00816462 /* YTKChainRequestAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = BF00800619FF988A00816462 /* YTKChainRequestAgent.m */; };
 		BF00801219FF988A00816462 /* YTKNetworkAgent.m in Sources */ = {isa = PBXBuildFile; fileRef = BF00800819FF988A00816462 /* YTKNetworkAgent.m */; };
 		BF00801319FF988A00816462 /* YTKNetworkConfig.m in Sources */ = {isa = PBXBuildFile; fileRef = BF00800A19FF988A00816462 /* YTKNetworkConfig.m */; };
 		BF00801419FF988A00816462 /* YTKRequest.m in Sources */ = {isa = PBXBuildFile; fileRef = BF00800C19FF988A00816462 /* YTKRequest.m */; };
@@ -61,8 +59,6 @@
 
 /* Begin PBXFileReference section */
 		451C59D91B27F37C00AAC845 /* YTKJSONValidatorTests.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTKJSONValidatorTests.m; sourceTree = "<group>"; };
-		457AD4021A8E45AB000E8B41 /* YTKBatchRequestAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTKBatchRequestAgent.h; sourceTree = "<group>"; };
-		457AD4031A8E45AB000E8B41 /* YTKBatchRequestAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTKBatchRequestAgent.m; sourceTree = "<group>"; };
 		45AB19BF1A4656A600680858 /* YTKUrlArgumentsFilter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTKUrlArgumentsFilter.h; sourceTree = "<group>"; };
 		45AB19C01A4656A600680858 /* YTKUrlArgumentsFilter.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTKUrlArgumentsFilter.m; sourceTree = "<group>"; };
 		45BF1D3E1A0DC0A100DDB7E0 /* RegisterApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = RegisterApi.h; sourceTree = "<group>"; };
@@ -73,6 +69,9 @@
 		45BF1D451A0DC66E00DDB7E0 /* GetImageApi.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = GetImageApi.m; sourceTree = "<group>"; };
 		45F710821A466D01001957BA /* UploadImageApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = UploadImageApi.h; sourceTree = "<group>"; };
 		45F710831A466D01001957BA /* UploadImageApi.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = UploadImageApi.m; sourceTree = "<group>"; };
+		645002891BF5D83B00ABD638 /* Usage.md */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = net.daringfireball.markdown; path = Usage.md; sourceTree = "<group>"; };
+		645002911BF5E8C300ABD638 /* CustomApi.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomApi.h; sourceTree = "<group>"; };
+		645002921BF5E8C300ABD638 /* CustomApi.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomApi.m; sourceTree = "<group>"; };
 		BF007FD319FF972C00816462 /* YTKNetworkDemo.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = YTKNetworkDemo.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		BF007FD719FF972C00816462 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		BF007FD819FF972C00816462 /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
@@ -88,12 +87,6 @@
 		BF007FF219FF972C00816462 /* YTKNetworkDemoTests.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = YTKNetworkDemoTests.m; sourceTree = "<group>"; };
 		BF007FFD19FF988A00816462 /* YTKBaseRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTKBaseRequest.h; sourceTree = "<group>"; };
 		BF007FFE19FF988A00816462 /* YTKBaseRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTKBaseRequest.m; sourceTree = "<group>"; };
-		BF00800119FF988A00816462 /* YTKBatchRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTKBatchRequest.h; sourceTree = "<group>"; };
-		BF00800219FF988A00816462 /* YTKBatchRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTKBatchRequest.m; sourceTree = "<group>"; };
-		BF00800319FF988A00816462 /* YTKChainRequest.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTKChainRequest.h; sourceTree = "<group>"; };
-		BF00800419FF988A00816462 /* YTKChainRequest.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTKChainRequest.m; sourceTree = "<group>"; };
-		BF00800519FF988A00816462 /* YTKChainRequestAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTKChainRequestAgent.h; sourceTree = "<group>"; };
-		BF00800619FF988A00816462 /* YTKChainRequestAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTKChainRequestAgent.m; sourceTree = "<group>"; };
 		BF00800719FF988A00816462 /* YTKNetworkAgent.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTKNetworkAgent.h; sourceTree = "<group>"; };
 		BF00800819FF988A00816462 /* YTKNetworkAgent.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = YTKNetworkAgent.m; sourceTree = "<group>"; };
 		BF00800919FF988A00816462 /* YTKNetworkConfig.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = YTKNetworkConfig.h; sourceTree = "<group>"; };
@@ -160,6 +153,60 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		6450028B1BF5DBB600ABD638 /* 基本用法 */ = {
+			isa = PBXGroup;
+			children = (
+				45BF1D3E1A0DC0A100DDB7E0 /* RegisterApi.h */,
+				45BF1D3F1A0DC0A100DDB7E0 /* RegisterApi.m */,
+			);
+			name = "基本用法";
+			sourceTree = "<group>";
+		};
+		6450028C1BF5DF1F00ABD638 /* CDN、断点 */ = {
+			isa = PBXGroup;
+			children = (
+				45BF1D441A0DC66E00DDB7E0 /* GetImageApi.h */,
+				45BF1D451A0DC66E00DDB7E0 /* GetImageApi.m */,
+			);
+			name = "CDN、断点";
+			sourceTree = "<group>";
+		};
+		6450028D1BF5DF3F00ABD638 /* Json校验、缓存 */ = {
+			isa = PBXGroup;
+			children = (
+				45BF1D411A0DC40F00DDB7E0 /* GetUserInfoApi.h */,
+				45BF1D421A0DC40F00DDB7E0 /* GetUserInfoApi.m */,
+			);
+			name = "Json校验、缓存";
+			sourceTree = "<group>";
+		};
+		6450028E1BF5E62F00ABD638 /* 全局参数 */ = {
+			isa = PBXGroup;
+			children = (
+				45AB19BF1A4656A600680858 /* YTKUrlArgumentsFilter.h */,
+				45AB19C01A4656A600680858 /* YTKUrlArgumentsFilter.m */,
+			);
+			name = "全局参数";
+			sourceTree = "<group>";
+		};
+		6450028F1BF5E75700ABD638 /* 上传文件 */ = {
+			isa = PBXGroup;
+			children = (
+				45F710821A466D01001957BA /* UploadImageApi.h */,
+				45F710831A466D01001957BA /* UploadImageApi.m */,
+			);
+			name = "上传文件";
+			sourceTree = "<group>";
+		};
+		645002901BF5E88C00ABD638 /* 自定义rquqest */ = {
+			isa = PBXGroup;
+			children = (
+				645002911BF5E8C300ABD638 /* CustomApi.h */,
+				645002921BF5E8C300ABD638 /* CustomApi.m */,
+			);
+			name = "自定义rquqest";
+			sourceTree = "<group>";
+		};
 		BF007FCA19FF972C00816462 = {
 			isa = PBXGroup;
 			children = (
@@ -183,23 +230,17 @@
 		BF007FD519FF972C00816462 /* YTKNetworkDemo */ = {
 			isa = PBXGroup;
 			children = (
-				45F710821A466D01001957BA /* UploadImageApi.h */,
-				45F710831A466D01001957BA /* UploadImageApi.m */,
-				45AB19BF1A4656A600680858 /* YTKUrlArgumentsFilter.h */,
-				45AB19C01A4656A600680858 /* YTKUrlArgumentsFilter.m */,
-				45BF1D3E1A0DC0A100DDB7E0 /* RegisterApi.h */,
-				45BF1D3F1A0DC0A100DDB7E0 /* RegisterApi.m */,
-				45BF1D411A0DC40F00DDB7E0 /* GetUserInfoApi.h */,
-				45BF1D421A0DC40F00DDB7E0 /* GetUserInfoApi.m */,
-				45BF1D441A0DC66E00DDB7E0 /* GetImageApi.h */,
-				45BF1D451A0DC66E00DDB7E0 /* GetImageApi.m */,
+				645002901BF5E88C00ABD638 /* 自定义rquqest */,
+				6450028F1BF5E75700ABD638 /* 上传文件 */,
+				6450028E1BF5E62F00ABD638 /* 全局参数 */,
+				6450028D1BF5DF3F00ABD638 /* Json校验、缓存 */,
+				6450028C1BF5DF1F00ABD638 /* CDN、断点 */,
+				645002891BF5D83B00ABD638 /* Usage.md */,
+				6450028B1BF5DBB600ABD638 /* 基本用法 */,
 				BF007FDA19FF972C00816462 /* AppDelegate.h */,
 				BF007FDB19FF972C00816462 /* AppDelegate.m */,
 				BF007FDD19FF972C00816462 /* ViewController.h */,
 				BF007FDE19FF972C00816462 /* ViewController.m */,
-				BF007FE019FF972C00816462 /* Main.storyboard */,
-				BF007FE319FF972C00816462 /* Images.xcassets */,
-				BF007FE519FF972C00816462 /* LaunchScreen.xib */,
 				BF007FD619FF972C00816462 /* Supporting Files */,
 			);
 			path = YTKNetworkDemo;
@@ -208,6 +249,9 @@
 		BF007FD619FF972C00816462 /* Supporting Files */ = {
 			isa = PBXGroup;
 			children = (
+				BF007FE019FF972C00816462 /* Main.storyboard */,
+				BF007FE319FF972C00816462 /* Images.xcassets */,
+				BF007FE519FF972C00816462 /* LaunchScreen.xib */,
 				BF007FD719FF972C00816462 /* Info.plist */,
 				BF007FD819FF972C00816462 /* main.m */,
 			);
@@ -239,14 +283,6 @@
 				BF0080531A00913200816462 /* YTKNetworkPrivate.m */,
 				BF007FFD19FF988A00816462 /* YTKBaseRequest.h */,
 				BF007FFE19FF988A00816462 /* YTKBaseRequest.m */,
-				BF00800119FF988A00816462 /* YTKBatchRequest.h */,
-				BF00800219FF988A00816462 /* YTKBatchRequest.m */,
-				BF00800319FF988A00816462 /* YTKChainRequest.h */,
-				BF00800419FF988A00816462 /* YTKChainRequest.m */,
-				BF00800519FF988A00816462 /* YTKChainRequestAgent.h */,
-				BF00800619FF988A00816462 /* YTKChainRequestAgent.m */,
-				457AD4021A8E45AB000E8B41 /* YTKBatchRequestAgent.h */,
-				457AD4031A8E45AB000E8B41 /* YTKBatchRequestAgent.m */,
 				BF00800719FF988A00816462 /* YTKNetworkAgent.h */,
 				BF00800819FF988A00816462 /* YTKNetworkAgent.m */,
 				BF00800919FF988A00816462 /* YTKNetworkConfig.h */,
@@ -435,11 +471,10 @@
 				BF00804019FF98EE00816462 /* AFHTTPRequestOperationManager.m in Sources */,
 				BF00801219FF988A00816462 /* YTKNetworkAgent.m in Sources */,
 				BF00804219FF98EE00816462 /* AFNetworkReachabilityManager.m in Sources */,
-				BF00800F19FF988A00816462 /* YTKBatchRequest.m in Sources */,
 				45BF1D431A0DC40F00DDB7E0 /* GetUserInfoApi.m in Sources */,
+				645002931BF5E8C300ABD638 /* CustomApi.m in Sources */,
 				BF007FDC19FF972C00816462 /* AppDelegate.m in Sources */,
 				BF00804319FF98EE00816462 /* AFSecurityPolicy.m in Sources */,
-				457AD4041A8E45AB000E8B41 /* YTKBatchRequestAgent.m in Sources */,
 				45F710841A466D01001957BA /* UploadImageApi.m in Sources */,
 				BF007FD919FF972C00816462 /* main.m in Sources */,
 				BF0080541A00913200816462 /* YTKNetworkPrivate.m in Sources */,
@@ -447,14 +482,13 @@
 				BF00801319FF988A00816462 /* YTKNetworkConfig.m in Sources */,
 				BF00804619FF98EE00816462 /* AFURLResponseSerialization.m in Sources */,
 				45BF1D401A0DC0A100DDB7E0 /* RegisterApi.m in Sources */,
-				BF00801119FF988A00816462 /* YTKChainRequestAgent.m in Sources */,
 				BF00804919FF98EE00816462 /* UIActivityIndicatorView+AFNetworking.m in Sources */,
 				BF00804E19FF98EE00816462 /* UIRefreshControl+AFNetworking.m in Sources */,
 				BF00804D19FF98EE00816462 /* UIProgressView+AFNetworking.m in Sources */,
+				6450028A1BF5D83B00ABD638 /* Usage.md in Sources */,
 				BF00800D19FF988A00816462 /* YTKBaseRequest.m in Sources */,
 				BF00804F19FF98EE00816462 /* UIWebView+AFNetworking.m in Sources */,
 				BF00804119FF98EE00816462 /* AFHTTPSessionManager.m in Sources */,
-				BF00801019FF988A00816462 /* YTKChainRequest.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

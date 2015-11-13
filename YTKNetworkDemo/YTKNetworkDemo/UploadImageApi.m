@@ -28,7 +28,10 @@
     return @"/iphone/image/upload";
 }
 
+//  我们创建了一个上传图片，然后获得服务器返回的 imageId 的网络请求Api
+
 - (AFConstructingBlock)constructingBodyBlock {
+    
     return ^(id<AFMultipartFormData> formData) {
         NSData *data = UIImageJPEGRepresentation(_image, 0.9);
         NSString *name = @"image";
