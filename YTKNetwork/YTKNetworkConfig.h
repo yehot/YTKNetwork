@@ -24,6 +24,7 @@
 #import <Foundation/Foundation.h>
 #import "YTKBaseRequest.h"
 
+//添加url统一参数
 @protocol YTKUrlFilterProtocol <NSObject>
 - (NSString *)filterUrl:(NSString *)originUrl withRequest:(YTKBaseRequest *)request;
 @end
@@ -41,6 +42,9 @@
 @property (strong, nonatomic, readonly) NSArray *urlFilters;
 @property (strong, nonatomic, readonly) NSArray *cacheDirPathFilters;
 
+/**
+ *  添加url过滤，统一加入
+ */
 - (void)addUrlFilter:(id<YTKUrlFilterProtocol>)filter;
 - (void)addCacheDirPathFilter:(id <YTKCacheDirPathFilterProtocol>)filter;
 

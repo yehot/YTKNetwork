@@ -52,6 +52,7 @@
     return self;
 }
 
+////请求url的处理：加上filter，baseurl等
 - (NSString *)buildRequestUrl:(YTKBaseRequest *)request {
     NSString *detailUrl = [request requestUrl];
     if ([detailUrl hasPrefix:@"http"]) {
@@ -80,10 +81,12 @@
     return [NSString stringWithFormat:@"%@%@", baseUrl, detailUrl];
 }
 
+//  从请求对象取各种参数设置，配置到 AFHTTPRequestOperationManager
+//  并用其发起请求
 - (void)addRequest:(YTKBaseRequest *)request {
     YTKRequestMethod method = [request requestMethod];
     NSString *url = [self buildRequestUrl:request];
-    id param = request.requestArgument;
+    id param = request.requestArgument; //请求参数
     AFConstructingBlock constructingBlock = [request constructingBodyBlock];
 
     if (request.requestSerializerType == YTKRequestSerializerTypeHTTP) {
@@ -146,7 +149,7 @@
             } else {
                 request.requestOperation = [_manager GET:url parameters:param success:^(AFHTTPRequestOperation *operation, id responseObject) {
                     [self handleRequestResult:operation];
-                }                                failure:^(AFHTTPRequestOperation *operation, NSError *error) {
+                } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                     [self handleRequestResult:operation];
                 }];
             }
@@ -226,14 +229,18 @@
     return result;
 }
 
+#pragma mark - 处理请求结果
+//回调，在请求成功或失败的AFN 的回调block 里，调用此方法
+//  在这里判断，如果有 delegate，用代理回调，如果有block，
+//
 - (void)handleRequestResult:(AFHTTPRequestOperation *)operation {
     NSString *key = [self requestHashKey:operation];
     YTKBaseRequest *request = _requestsRecord[key];
     YTKLog(@"Finished Request: %@", NSStringFromClass([request class]));
-    if (request) {
+    if (request) {  //请求成功
         BOOL succeed = [self checkResult:request];
         if (succeed) {
-            [request toggleAccessoriesWillStopCallBack];
+            [request ytk_toggleAccessoriesWillStopCallBack];
             [request requestCompleteFilter];
             if (request.delegate != nil) {
                 [request.delegate requestFinished:request];
@@ -241,11 +248,11 @@
             if (request.successCompletionBlock) {
                 request.successCompletionBlock(request);
             }
-            [request toggleAccessoriesDidStopCallBack];
+            [request ytk_toggleAccessoriesDidStopCallBack];
         } else {
             YTKLog(@"Request %@ failed, status code = %ld",
                      NSStringFromClass([request class]), (long)request.responseStatusCode);
-            [request toggleAccessoriesWillStopCallBack];
+            [request ytk_toggleAccessoriesWillStopCallBack];
             [request requestFailedFilter];
             if (request.delegate != nil) {
                 [request.delegate requestFailed:request];
@@ -253,7 +260,7 @@
             if (request.failureCompletionBlock) {
                 request.failureCompletionBlock(request);
             }
-            [request toggleAccessoriesDidStopCallBack];
+            [request ytk_toggleAccessoriesDidStopCallBack];
         }
     }
     [self removeOperation:operation];

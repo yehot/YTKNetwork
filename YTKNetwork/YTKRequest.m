@@ -35,6 +35,8 @@
     BOOL _dataFromCache;
 }
 
+#pragma mark - 供子类重载
+//默认值
 - (NSInteger)cacheTimeInSeconds {
     return -1;
 }
@@ -138,6 +140,7 @@
     return seconds;
 }
 
+//发起请求
 - (void)start {
     if (self.ignoreCache) {
         [super start];

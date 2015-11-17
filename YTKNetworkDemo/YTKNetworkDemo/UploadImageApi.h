@@ -10,9 +10,9 @@
     我们可以通过覆盖constructingBodyBlock方法，来方便地上传图片等附件
  */
 
-#import "YTKRequest.h"
+#import "YTKBaseRequest.h"
 
-@interface UploadImageApi : YTKRequest
+@interface UploadImageApi : YTKBaseRequest
 
 - (id)initWithImage:(UIImage *)image;
 

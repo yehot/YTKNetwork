@@ -15,8 +15,8 @@
  
  */
 
-#import "YTKRequest.h"
+#import "YTKBaseRequest.h"
 
-@interface CustomApi : YTKRequest
+@interface CustomApi : YTKBaseRequest
 
 @end

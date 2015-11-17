@@ -13,7 +13,11 @@
 /*
  如注释所言，如果构建自定义的request，
  会忽略其他的一切自定义request的方法，例如requestUrl, requestArgument, requestMethod, requestSerializerType,requestHeaderFieldValueDictionary。一个上传gzippingData的示例如下：
+
+    给自定义的 CustomApi ，提供接口传入请求的参数等信息
  */
+
+
 
 - (NSURLRequest *)buildCustomUrlRequest {
 
@@ -22,7 +26,6 @@
     [request addValue:@"application/json;charset=UTF-8" forHTTPHeaderField:@"Content-Type"];
     [request addValue:@"gzip" forHTTPHeaderField:@"Content-Encoding"];
     [request setHTTPBody:[@"someStr" dataUsingEncoding:NSUTF8StringEncoding]];
-    
     return request;
 }
 

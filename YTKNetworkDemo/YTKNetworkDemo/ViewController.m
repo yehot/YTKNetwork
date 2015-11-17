@@ -10,6 +10,7 @@
 #import "GetImageApi.h"
 #import "GetUserInfoApi.h"
 #import "RegisterApi.h"
+//#import "YTKBaseRequest.h"
 
 @interface ViewController () <YTKRequestDelegate> {
     NSString *username;
@@ -20,24 +21,40 @@
 
 @implementation ViewController
 
+
+- (void)viewDidLoad {
+    [super viewDidLoad];
+    username = @"name";
+    password = @"pass";
+    
+    [self startRequestUseBlock];
+    
+//    [self startRequestUseDelegate];
+    
+}
+
 #pragma mark - 使用block发起请求
 
-- (void)loginButtonPressed:(id)sender {
+- (void)startRequestUseBlock {
     
+    //1、请求对象
+    //      1.传入请求参数，2.对象内部设置了请求方式，3，
     RegisterApi *api = [[RegisterApi alloc] initWithUsername:username password:password];
     [api startWithCompletionBlockWithSuccess:^(YTKBaseRequest *request) {
         // 你可以直接在这里使用 self
         NSLog(@"succeed");
+        NSLog(@"%@",request.responseJSONObject);
         //你可以直接在block回调中使用 self，不用担心循环引用。
         //因为 YTKRequest 会在执行完 block 回调之后，将相应的 block 设置成 nil。从而打破循环引用。
     } failure:^(YTKBaseRequest *request) {
         NSLog(@"failed");
+        NSLog(@"%@",request.responseHeaders);
     }];
 }
 
 #pragma mark - YTKRequestDelegate
 //  使用 delegate 方式发起请求
-- (void)loginButtonPressedDelegate:(id)sender {
+- (void)startRequestUseDelegate {
     
     RegisterApi *api = [[RegisterApi alloc] initWithUsername:username password:password];
     api.delegate = self;
@@ -46,6 +63,7 @@
 
 - (void)requestFinished:(YTKBaseRequest *)request {
     NSLog(@"succeed");
+    
 //    request.
 }
 
@@ -79,16 +97,6 @@
         NSLog(@"failed");
     }];
 }
-
-#pragma mark - other 
-
-- (void)viewDidLoad {
-    [super viewDidLoad];
-    username = @"name";
-    password = @"pass";
-}
-
-
 
 
 @end

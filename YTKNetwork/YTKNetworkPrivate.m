@@ -151,28 +151,28 @@ void YTKLog(NSString *format, ...) {
 
 @end
 
-#pragma mark - YTKBaseRequest 扩展
+#pragma mark - YTKBaseRequest category
 
 @implementation YTKBaseRequest (RequestAccessory)
 
-- (void)toggleAccessoriesWillStartCallBack {
-    for (id<YTKRequestAccessory> accessory in self.requestAccessories) {
+- (void)ytk_toggleAccessoriesWillStartCallBack {
+    for (id<YTKRequestAccessoryDelegate> accessory in self.requestAccessories) {
         if ([accessory respondsToSelector:@selector(requestWillStart:)]) {
             [accessory requestWillStart:self];
         }
     }
 }
 
-- (void)toggleAccessoriesWillStopCallBack {
-    for (id<YTKRequestAccessory> accessory in self.requestAccessories) {
+- (void)ytk_toggleAccessoriesWillStopCallBack {
+    for (id<YTKRequestAccessoryDelegate> accessory in self.requestAccessories) {
         if ([accessory respondsToSelector:@selector(requestWillStop:)]) {
             [accessory requestWillStop:self];
         }
     }
 }
 
-- (void)toggleAccessoriesDidStopCallBack {
-    for (id<YTKRequestAccessory> accessory in self.requestAccessories) {
+- (void)ytk_toggleAccessoriesDidStopCallBack {
+    for (id<YTKRequestAccessoryDelegate> accessory in self.requestAccessories) {
         if ([accessory respondsToSelector:@selector(requestDidStop:)]) {
             [accessory requestDidStop:self];
         }

@@ -24,7 +24,7 @@
 #import <Foundation/Foundation.h>
 #import "AFDownloadRequestOperation.h"
 
-//  请求方式
+//请求方式
 typedef NS_ENUM(NSInteger , YTKRequestMethod) {
     YTKRequestMethodGet = 0,
     YTKRequestMethodPost,
@@ -34,7 +34,7 @@ typedef NS_ENUM(NSInteger , YTKRequestMethod) {
     YTKRequestMethodPatch
 };
 
-//  序列化方式
+//序列化方式
 typedef NS_ENUM(NSInteger , YTKRequestSerializerType) {
     YTKRequestSerializerTypeHTTP = 0,
     YTKRequestSerializerTypeJSON,
@@ -56,9 +56,9 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 
 @end
 
-#pragma mark - YTKRequestAccessory
+#pragma mark - YTKRequestAccessoryDelegate
 
-@protocol YTKRequestAccessory <NSObject>
+@protocol YTKRequestAccessoryDelegate <NSObject>
 
 @optional
 
@@ -78,26 +78,32 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 /// User info
 @property (nonatomic, strong) NSDictionary *userInfo;
 
+//请求的AFN实例
 @property (nonatomic, strong) AFHTTPRequestOperation *requestOperation;
 
 /// request delegate object
 @property (nonatomic, weak) id<YTKRequestDelegate> delegate;
 
+#pragma mark - response
+//请求返回
+//响应头
 @property (nonatomic, strong, readonly) NSDictionary *responseHeaders;
-
+//返回的sting
 @property (nonatomic, strong, readonly) NSString *responseString;
-
+//返回的json数据
 @property (nonatomic, strong, readonly) id responseJSONObject;
-
+//返回的状态码
 @property (nonatomic, readonly) NSInteger responseStatusCode;
 
+//请求成功的block回调
 @property (nonatomic, copy) void (^successCompletionBlock)(YTKBaseRequest *);
-
+//请求失败的block回调
 @property (nonatomic, copy) void (^failureCompletionBlock)(YTKBaseRequest *);
 
+/// Request Accessory，可以hook Request的start和stop (在请求的开始、进行中、结束时，加入动作)
 @property (nonatomic, strong) NSMutableArray *requestAccessories;
 
-#pragma mark -
+#pragma mark - main
 
 /// append self to request queue
 - (void)start;
@@ -117,8 +123,8 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 /// 把block置nil来打破循环引用
 - (void)clearCompletionBlock;
 
-/// Request Accessory，可以hook Request的start和stop
-- (void)addAccessory:(id<YTKRequestAccessory>)accessory;
+/// Request Accessory，可以hook Request的start和stop (在请求的开始、进行中、结束时，加入动作)
+- (void)addAccessory:(id<YTKRequestAccessoryDelegate>)accessory;
 
 #pragma mark - 以下方法由子类继承来覆盖默认值
 
@@ -178,6 +184,8 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 
 /// 当POST的内容带有文件等富文本时使用
 - (AFConstructingBlock)constructingBodyBlock;
+
+#pragma mark 断点续传
 
 /// 当需要断点续传时，指定续传的地址
 - (NSString *)resumableDownloadPath;

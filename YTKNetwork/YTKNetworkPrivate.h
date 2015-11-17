@@ -24,8 +24,12 @@
 #import <Foundation/Foundation.h>
 #import "YTKBaseRequest.h"
 
+//自定义log
 FOUNDATION_EXPORT void YTKLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2);
 
+/**
+ *  网络工具类内的公用方法，未对外提供
+ */
 @interface YTKNetworkPrivate : NSObject
 
 + (BOOL)checkJson:(id)json withValidator:(id)validatorJson;
@@ -43,9 +47,10 @@ FOUNDATION_EXPORT void YTKLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2);
 
 @interface YTKBaseRequest (RequestAccessory)
 
-- (void)toggleAccessoriesWillStartCallBack;
-- (void)toggleAccessoriesWillStopCallBack;
-- (void)toggleAccessoriesDidStopCallBack;
+//  category 加前缀 kds_
+- (void)ytk_toggleAccessoriesWillStartCallBack;
+- (void)ytk_toggleAccessoriesWillStopCallBack;
+- (void)ytk_toggleAccessoriesDidStopCallBack;
 
 @end
 

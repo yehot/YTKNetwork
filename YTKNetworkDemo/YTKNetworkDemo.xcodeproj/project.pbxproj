@@ -106,6 +106,24 @@
 			name = Frameworks;
 			sourceTree = "<group>";
 		};
+		641167F01BFB01E6006AB48F /* request */ = {
+			isa = PBXGroup;
+			children = (
+				BF007FFD19FF988A00816462 /* YTKBaseRequest.h */,
+				BF007FFE19FF988A00816462 /* YTKBaseRequest.m */,
+			);
+			name = request;
+			sourceTree = "<group>";
+		};
+		641167F11BFB1B65006AB48F /* cacheRequest */ = {
+			isa = PBXGroup;
+			children = (
+				BF00800B19FF988A00816462 /* YTKRequest.h */,
+				BF00800C19FF988A00816462 /* YTKRequest.m */,
+			);
+			name = cacheRequest;
+			sourceTree = "<group>";
+		};
 		6450028B1BF5DBB600ABD638 /* 基本用法 */ = {
 			isa = PBXGroup;
 			children = (
@@ -160,13 +178,13 @@
 			name = "自定义rquqest";
 			sourceTree = "<group>";
 		};
-		645002941BF5F1FB00ABD638 /* helper */ = {
+		645002941BF5F1FB00ABD638 /* helper(tool) */ = {
 			isa = PBXGroup;
 			children = (
 				BF0080521A00913200816462 /* YTKNetworkPrivate.h */,
 				BF0080531A00913200816462 /* YTKNetworkPrivate.m */,
 			);
-			name = helper;
+			name = "helper(tool)";
 			sourceTree = "<group>";
 		};
 		BF007FCA19FF972C00816462 = {
@@ -240,15 +258,13 @@
 		BF007FFC19FF988A00816462 /* YTKNetwork */ = {
 			isa = PBXGroup;
 			children = (
-				645002941BF5F1FB00ABD638 /* helper */,
-				BF007FFD19FF988A00816462 /* YTKBaseRequest.h */,
-				BF007FFE19FF988A00816462 /* YTKBaseRequest.m */,
+				645002941BF5F1FB00ABD638 /* helper(tool) */,
+				641167F11BFB1B65006AB48F /* cacheRequest */,
+				641167F01BFB01E6006AB48F /* request */,
 				BF00800719FF988A00816462 /* YTKNetworkAgent.h */,
 				BF00800819FF988A00816462 /* YTKNetworkAgent.m */,
 				BF00800919FF988A00816462 /* YTKNetworkConfig.h */,
 				BF00800A19FF988A00816462 /* YTKNetworkConfig.m */,
-				BF00800B19FF988A00816462 /* YTKRequest.h */,
-				BF00800C19FF988A00816462 /* YTKRequest.m */,
 			);
 			name = YTKNetwork;
 			path = ../YTKNetwork;

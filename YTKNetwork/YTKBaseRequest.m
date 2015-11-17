@@ -99,26 +99,18 @@
     return nil;
 }
 
-- (NSString *)resumableDownloadPath {
-    return nil;
-}
-
-- (AFDownloadProgressBlock)resumableDownloadProgressBlock {
-    return nil;
-}
-
 /// append self to request queue
 - (void)start {
-    [self toggleAccessoriesWillStartCallBack];
+    [self ytk_toggleAccessoriesWillStartCallBack];
     [[YTKNetworkAgent sharedInstance] addRequest:self];
 }
 
 /// remove self from request queue
 - (void)stop {
-    [self toggleAccessoriesWillStopCallBack];
+    [self ytk_toggleAccessoriesWillStopCallBack];
     self.delegate = nil;
     [[YTKNetworkAgent sharedInstance] cancelRequest:self];
-    [self toggleAccessoriesDidStopCallBack];
+    [self ytk_toggleAccessoriesDidStopCallBack];
 }
 
 - (BOOL)isExecuting {
@@ -161,11 +153,21 @@
 
 #pragma mark - Request Accessoies
 
-- (void)addAccessory:(id<YTKRequestAccessory>)accessory {
+- (void)addAccessory:(id<YTKRequestAccessoryDelegate>)accessory {
     if (!self.requestAccessories) {
         self.requestAccessories = [NSMutableArray array];
     }
     [self.requestAccessories addObject:accessory];
+}
+
+#pragma mark - 断点续传
+
+- (NSString *)resumableDownloadPath {
+    return nil;
+}
+
+- (AFDownloadProgressBlock)resumableDownloadProgressBlock {
+    return nil;
 }
 
 @end

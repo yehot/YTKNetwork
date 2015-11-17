@@ -24,6 +24,10 @@
 #import <Foundation/Foundation.h>
 #import "YTKBaseRequest.h"
 
+/**
+ *  网络请求发起者，不直接调用
+ *  内部调用AFN
+ */
 @interface YTKNetworkAgent : NSObject
 
 + (YTKNetworkAgent *)sharedInstance;

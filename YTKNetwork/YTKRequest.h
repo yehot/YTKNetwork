@@ -23,8 +23,14 @@
 
 #import "YTKBaseRequest.h"
 
+/**
+ *  带有缓存功能的请求对象（如果不需要缓存功能，可以继续此类）
+ */
 @interface YTKRequest : YTKBaseRequest
 
+/**
+ *  是否忽略缓存
+ */
 @property (nonatomic) BOOL ignoreCache;
 
 /// 返回当前缓存的对象
@@ -42,9 +48,14 @@
 /// 手动将其他请求的JsonResponse写入该请求的缓存
 - (void)saveJsonResponseToCacheFile:(id)jsonResponse;
 
+#pragma mark  供子类实现
 /// For subclass to overwrite
+
+///设定缓存时间
 - (NSInteger)cacheTimeInSeconds;
+///缓存版本号
 - (long long)cacheVersion;
+///缓存
 - (id)cacheSensitiveData;
 
 @end

@@ -6,9 +6,9 @@
 //  Copyright (c) 2014 yuantiku.com. All rights reserved.
 //
 
-#import "YTKRequest.h"
+#import "YTKBaseRequest.h"
 
-@interface GetImageApi : YTKRequest
+@interface GetImageApi : YTKBaseRequest
 
 - (id)initWithImageId:(NSString *)imageId;
 

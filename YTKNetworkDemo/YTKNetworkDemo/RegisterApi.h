@@ -17,12 +17,12 @@
  
  */
 
-#import "YTKRequest.h"
+#import "YTKBaseRequest.h"
 
-@interface RegisterApi : YTKRequest
+@interface RegisterApi : YTKBaseRequest
 
 - (id)initWithUsername:(NSString *)username password:(NSString *)password;
 
-- (NSString *)userId;
+//- (NSString *)userId;
 
 @end
