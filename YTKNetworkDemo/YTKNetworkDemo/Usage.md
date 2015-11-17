@@ -3,6 +3,11 @@ https://github.com/yuantiku/YTKNetwork
 
 1、YTKNetwork 是猿题库 iOS 研发团队基于 AFNetworking 封装的 iOS 网络库，其实现了一套 High Level 的 API，提供了更高层次的网络访问抽象。
 
+    ·只有 BaseRequest.h 直接依赖于 AFNetworking 的 AFDownloadRequestOperation.h
+
+    YTKNetworkAgent.h 依赖于 AFNetworking.h 和 AFDownloadRequestOperation.h
+
+
 2、相比 AFNetworking，YTKNetwork 提供了以下更高级的功能：
     支持按时间缓存网络请求内容；
     支持按版本号缓存网络请求内容；

@@ -22,7 +22,6 @@
 //  THE SOFTWARE.
 
 #import <Foundation/Foundation.h>
-#import "AFNetworking.h"
 #import "AFDownloadRequestOperation.h"
 
 //  请求方式

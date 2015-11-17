@@ -151,6 +151,8 @@ void YTKLog(NSString *format, ...) {
 
 @end
 
+#pragma mark - YTKBaseRequest 扩展
+
 @implementation YTKBaseRequest (RequestAccessory)
 
 - (void)toggleAccessoriesWillStartCallBack {
