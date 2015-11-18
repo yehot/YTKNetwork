@@ -38,7 +38,8 @@
 
 - (void)cancelAllRequests;
 
+//  TODO：此方法没有必要暴露出来
 /// 根据request和networkConfig构建url
-- (NSString *)buildRequestUrl:(YTKBaseRequest *)request;
+//- (NSString *)buildRequestUrl:(YTKBaseRequest *)request;
 
 @end

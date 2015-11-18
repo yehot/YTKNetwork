@@ -25,6 +25,10 @@
 #import "YTKNetworkAgent.h"
 #import "YTKNetworkPrivate.h"
 
+@interface YTKBaseRequest ()
+
+@end
+
 @implementation YTKBaseRequest
 
 /// for subclasses to overwrite
@@ -54,14 +58,12 @@
     return nil;
 }
 
-- (id)cacheFileNameFilterForRequestArgument:(id)argument {
-    return argument;
-}
-
+//默认get请求
 - (YTKRequestMethod)requestMethod {
     return YTKRequestMethodGet;
 }
 
+//默认http参数
 - (YTKRequestSerializerType)requestSerializerType {
     return YTKRequestSerializerTypeHTTP;
 }
@@ -84,15 +86,6 @@
 
 - (id)jsonValidator {
     return nil;
-}
-
-- (BOOL)statusCodeValidator {
-    NSInteger statusCode = [self responseStatusCode];
-    if (statusCode >= 200 && statusCode <=299) {
-        return YES;
-    } else {
-        return NO;
-    }
 }
 
 - (AFConstructingBlock)constructingBodyBlock {
@@ -134,6 +127,22 @@
     self.successCompletionBlock = nil;
     self.failureCompletionBlock = nil;
 }
+
+#pragma mark - setter 
+
+- (void)setSuccessCompletionBlock:(void (^)(YTKBaseRequest *))successCompletionBlock {
+    if (!_successCompletionBlock) {
+        _successCompletionBlock = successCompletionBlock;
+    }
+}
+
+- (void)setFailureCompletionBlock:(void (^)(YTKBaseRequest *))failureCompletionBlock {
+    if (!_failureCompletionBlock) {
+        _failureCompletionBlock = failureCompletionBlock;
+    }
+}
+
+#pragma mark - getter
 
 - (id)responseJSONObject {
     return self.requestOperation.responseObject;

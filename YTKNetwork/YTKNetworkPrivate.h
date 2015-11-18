@@ -32,15 +32,16 @@ FOUNDATION_EXPORT void YTKLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2);
  */
 @interface YTKNetworkPrivate : NSObject
 
+//  Agent在用
 + (BOOL)checkJson:(id)json withValidator:(id)validatorJson;
 
+// Agent在用
 + (NSString *)urlStringWithOriginUrlString:(NSString *)originUrlString
                           appendParameters:(NSDictionary *)parameters;
 
+//TODO:  这两个方法，放入 cache 类中
 + (void)addDoNotBackupAttribute:(NSString *)path;
-
 + (NSString *)md5StringFromString:(NSString *)string;
-
 + (NSString *)appVersionString;
 
 @end

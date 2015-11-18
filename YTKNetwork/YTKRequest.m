@@ -231,6 +231,10 @@
     }
 }
 
+- (id)cacheFileNameFilterForRequestArgument:(id)argument {
+    return argument;
+}
+
 #pragma mark - Network Request Delegate
 
 - (void)requestCompleteFilter {

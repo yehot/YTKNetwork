@@ -87,7 +87,6 @@
     YTKRequestMethod method = [request requestMethod];
     NSString *url = [self buildRequestUrl:request];
     id param = request.requestArgument; //请求参数
-    AFConstructingBlock constructingBlock = [request constructingBodyBlock];
 
     if (request.requestSerializerType == YTKRequestSerializerTypeHTTP) {
         _manager.requestSerializer = [AFHTTPRequestSerializer serializer];
@@ -104,6 +103,7 @@
                                                                    password:(NSString *)authorizationHeaderFieldArray.lastObject];
     }
     
+    //   非必须 （个性化需要）
     // if api need add custom value to HTTPHeaderField
     NSDictionary *headerFieldValueDictionary = [request requestHeaderFieldValueDictionary];
     if (headerFieldValueDictionary != nil) {
@@ -117,18 +117,30 @@
         }
     }
 
+
     // if api build custom url request
     NSURLRequest *customUrlRequest= [request buildCustomUrlRequest];
     if (customUrlRequest) {
+        
+//        TODO: 这里为什么使用 NSURLRequest 发起请求时， 用 AFHTTPRequestOperation initWithRequest：
+//              然后[operation setCompletionBlockWithSuccess：
+//          而其它请求，用 manager GET:url parameters:param success:
+        
+//        1.这里的 NSURLRequest 是一个完整的 request，设置了请求头、get、post 等
+        
         AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:customUrlRequest];
         [operation setCompletionBlockWithSuccess:^(AFHTTPRequestOperation *operation, id responseObject) {
+            // operation.responseObject 就是 responseObject
+            //   这里的 成功和失败没有区别对待，原因是 operation 里包含了 responseObject 和 error
+            // 这个 block 的两个参数 分别是 （self, self.responseObject）—— 只是为了使用方便
             [self handleRequestResult:operation];
         } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
             [self handleRequestResult:operation];
         }];
         request.requestOperation = operation;
         operation.responseSerializer = _manager.responseSerializer;
-        [_manager.operationQueue addOperation:operation];
+        [_manager.operationQueue addOperation:operation];   // 加入 queue 后，会自动启动任务？
+        
     } else {
         if (method == YTKRequestMethodGet) {
             if (request.resumableDownloadPath) {
@@ -146,14 +158,19 @@
                 }];
                 request.requestOperation = operation;
                 [_manager.operationQueue addOperation:operation];
-            } else {
+            }
+            else {
                 request.requestOperation = [_manager GET:url parameters:param success:^(AFHTTPRequestOperation *operation, id responseObject) {
                     [self handleRequestResult:operation];
                 } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                     [self handleRequestResult:operation];
                 }];
             }
-        } else if (method == YTKRequestMethodPost) {
+        }
+        else if (method == YTKRequestMethodPost) {
+            
+            //  可以用点语法
+            AFConstructingBlock constructingBlock = [request constructingBodyBlock];
             if (constructingBlock != nil) {
                 request.requestOperation = [_manager POST:url parameters:param constructingBodyWithBlock:constructingBlock
                                                   success:^(AFHTTPRequestOperation *operation, id responseObject) {
@@ -168,31 +185,36 @@
                     [self handleRequestResult:operation];
                 }];
             }
-        } else if (method == YTKRequestMethodHead) {
+        }
+        else if (method == YTKRequestMethodHead) {
             request.requestOperation = [_manager HEAD:url parameters:param success:^(AFHTTPRequestOperation *operation) {
                 [self handleRequestResult:operation];
             }                                 failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 [self handleRequestResult:operation];
             }];
-        } else if (method == YTKRequestMethodPut) {
+        }
+        else if (method == YTKRequestMethodPut) {
             request.requestOperation = [_manager PUT:url parameters:param success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 [self handleRequestResult:operation];
             }                                failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 [self handleRequestResult:operation];
             }];
-        } else if (method == YTKRequestMethodDelete) {
+        }
+        else if (method == YTKRequestMethodDelete) {
             request.requestOperation = [_manager DELETE:url parameters:param success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 [self handleRequestResult:operation];
             }                                   failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 [self handleRequestResult:operation];
             }];
-        } else if (method == YTKRequestMethodPatch) {
+        }
+        else if (method == YTKRequestMethodPatch) {
             request.requestOperation = [_manager PATCH:url parameters:param success:^(AFHTTPRequestOperation *operation, id responseObject) {
                 [self handleRequestResult:operation];
             } failure:^(AFHTTPRequestOperation *operation, NSError *error) {
                 [self handleRequestResult:operation];
             }];
-        } else {
+        }
+        else {
             YTKLog(@"Error, unsupport method type");
             return;
         }
@@ -217,7 +239,7 @@
 }
 
 - (BOOL)checkResult:(YTKBaseRequest *)request {
-    BOOL result = [request statusCodeValidator];
+    BOOL result = request.requestOperation.response.statusCode;
     if (!result) {
         return result;
     }
@@ -232,7 +254,11 @@
 #pragma mark - 处理请求结果
 //回调，在请求成功或失败的AFN 的回调block 里，调用此方法
 //  在这里判断，如果有 delegate，用代理回调，如果有block，
-//
+//TODO: 这个方法，添加 id 类型 参数：responseObject  error
+//      拆成两个方法 successedWithResponse、failedWithRequest
+
+//  这个方法内部 用 operation 去 request字典里取，request
+//  而 request里，又包含了 数据、和 operation、错误信息，所以，这里不用区别处理 success 和 failure
 - (void)handleRequestResult:(AFHTTPRequestOperation *)operation {
     NSString *key = [self requestHashKey:operation];
     YTKBaseRequest *request = _requestsRecord[key];
@@ -272,6 +298,9 @@
     return key;
 }
 
+/**
+ *  将 request 存入 dict （以 hash 作为 key）
+ */
 - (void)addOperation:(YTKBaseRequest *)request {
     if (request.requestOperation != nil) {
         NSString *key = [self requestHashKey:request.requestOperation];

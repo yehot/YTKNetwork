@@ -51,6 +51,9 @@
 #pragma mark  供子类实现
 /// For subclass to overwrite
 
+/// 用于在cache结果，计算cache文件名时，忽略掉一些指定的参数
+- (id)cacheFileNameFilterForRequestArgument:(id)argument;
+
 ///设定缓存时间
 - (NSInteger)cacheTimeInSeconds;
 ///缓存版本号
