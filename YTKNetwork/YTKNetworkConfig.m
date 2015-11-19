@@ -22,6 +22,7 @@
 //  THE SOFTWARE.
 
 #import "YTKNetworkConfig.h"
+#import "YTKNetworkPrivate.h"
 
 @implementation YTKNetworkConfig {
     NSMutableArray *_urlFilters;
@@ -42,6 +43,7 @@
     if (self) {
         _urlFilters = [NSMutableArray array];
         _cacheDirPathFilters = [NSMutableArray array];
+        _baseUrlComponents = [NSMutableDictionary dictionary];
     }
     return self;
 }
@@ -60,6 +62,43 @@
 
 - (NSArray *)cacheDirPathFilters {
     return [_cacheDirPathFilters copy];
+}
+
+- (void)addBaseURLComponentWithkey:(NSString *)key andValue:(NSString *)value {
+    NSAssert(key && value, @"key or value can't set nil!");
+    if (_baseUrlComponents != nil) {
+        if (key != nil && value != nil) {
+            [_baseUrlComponents setValue:value forKey:key];
+        }
+    }
+}
+
+#pragma mark - getter
+
+//- (NSMutableDictionary *)baseUrlComponents {
+//    if (!_baseUrlComponents) {
+//        _baseUrlComponents = [NSMutableDictionary dictionary];
+//    }
+//    return _baseUrlComponents;
+//}
+
+- (BOOL)hasBaseUrl {
+    return (self.baseUrl.length > 0);
+}
+
+- (BOOL)hasBaseUrlComponent {
+    return (self.baseUrlComponents.count > 0);
+}
+
+
+//  TODO: 此方法不需要，只调用第一行即可
+- (NSString *)appendComponentDict:(NSDictionary *)component toOriginUrl:(NSString *)originUrl {
+    
+    [YTKNetworkPrivate urlStringWithOriginUrlString:originUrl appendParameters:component];
+    
+    
+    NSString *urlWithFilter = [YTKNetworkPrivate urlStringWithOriginUrlString:originUrl appendParameters:component];
+    return urlWithFilter;
 }
 
 @end

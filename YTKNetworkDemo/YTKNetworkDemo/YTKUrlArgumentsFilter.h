@@ -29,6 +29,7 @@
 
 + (YTKUrlArgumentsFilter *)filterWithArguments:(NSDictionary *)arguments;
 
-- (NSString *)filterUrl:(NSString *)originUrl withRequest:(YTKBaseRequest *)request;
+//  这里不用再次声明这个方法，
+//- (NSString *)filterUrl:(NSString *)originUrl withRequest:(YTKBaseRequest *)request;
 
 @end

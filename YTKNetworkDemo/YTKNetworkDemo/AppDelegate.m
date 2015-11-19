@@ -17,7 +17,7 @@
 @implementation AppDelegate
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions {
-//    [self setupRequestFilters];
+    [self setupRequestFilters];
     return YES;
 }
 
@@ -27,6 +27,8 @@
     NSString *appVersion = [[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleShortVersionString"];
     YTKNetworkConfig *config = [YTKNetworkConfig sharedInstance];
     YTKUrlArgumentsFilter *urlFilter = [YTKUrlArgumentsFilter filterWithArguments:@{@"version": appVersion}];
+    [config addBaseURLComponentWithkey:nil andValue:nil];
+    
     [config addUrlFilter:urlFilter];
 }
 

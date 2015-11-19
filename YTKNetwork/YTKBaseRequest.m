@@ -131,15 +131,11 @@
 #pragma mark - setter 
 
 - (void)setSuccessCompletionBlock:(void (^)(YTKBaseRequest *))successCompletionBlock {
-    if (!_successCompletionBlock) {
-        _successCompletionBlock = successCompletionBlock;
-    }
+    _successCompletionBlock = successCompletionBlock;
 }
 
 - (void)setFailureCompletionBlock:(void (^)(YTKBaseRequest *))failureCompletionBlock {
-    if (!_failureCompletionBlock) {
-        _failureCompletionBlock = failureCompletionBlock;
-    }
+    _failureCompletionBlock = failureCompletionBlock;
 }
 
 #pragma mark - getter

@@ -19,9 +19,11 @@
 
 #import "YTKBaseRequest.h"
 
+
+// TODO: 这里命名规范下，统一 叫 xxxRequest。这样外部调用的时候，xxxRequest startWithCompletionBlockWithSuccess:
 @interface RegisterApi : YTKBaseRequest
 
-- (id)initWithUsername:(NSString *)username password:(NSString *)password;
+- (instancetype)initWithUsername:(NSString *)username password:(NSString *)password;
 
 //- (NSString *)userId;
 

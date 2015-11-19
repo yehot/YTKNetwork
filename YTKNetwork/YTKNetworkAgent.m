@@ -28,7 +28,6 @@
 
 @implementation YTKNetworkAgent {
     AFHTTPRequestOperationManager *_manager;
-    YTKNetworkConfig *_config;
     NSMutableDictionary *_requestsRecord;
 }
 
@@ -44,7 +43,6 @@
 - (id)init {
     self = [super init];
     if (self) {
-        _config = [YTKNetworkConfig sharedInstance];
         _manager = [AFHTTPRequestOperationManager manager];
         _requestsRecord = [NSMutableDictionary dictionary];
         _manager.operationQueue.maxConcurrentOperationCount = 4;
@@ -58,24 +56,33 @@
     if ([detailUrl hasPrefix:@"http"]) {
         return detailUrl;
     }
+    YTKNetworkConfig *_config;
+    _config = [YTKNetworkConfig sharedInstance];
+    
+    //   这里 接口需重构，目的只是为了 给 url 加上 统一参数，不需要这么复杂
     // filter url
     NSArray *filters = [_config urlFilters];
     for (id<YTKUrlFilterProtocol> f in filters) {
+        
+        //Tip: 协议的用法，为 一个类增加一个方法，不写在.h ,而是让这个类遵守 协议，并 在 .m 中实现协议的方法
+        //      从 .h 上直观的看，
+        // 为 url 追加 统一的参数
         detailUrl = [f filterUrl:detailUrl withRequest:request];
     }
 
     NSString *baseUrl;
-    if ([request useCDN]) {
+    if ([request useCDN]) {         // 此处不用 CDN，无需写
         if ([request cdnUrl].length > 0) {
             baseUrl = [request cdnUrl];
         } else {
             baseUrl = [_config cdnUrl];
         }
-    } else {
+    }
+    else {      // 拼接 base url
         if ([request baseUrl].length > 0) {
-            baseUrl = [request baseUrl];
+            baseUrl = [request baseUrl];    //请求单独指定的 base Url
         } else {
-            baseUrl = [_config baseUrl];
+            baseUrl = [_config baseUrl];    // 全局的 base URL
         }
     }
     return [NSString stringWithFormat:@"%@%@", baseUrl, detailUrl];
@@ -103,7 +110,7 @@
                                                                    password:(NSString *)authorizationHeaderFieldArray.lastObject];
     }
     
-    //   非必须 （个性化需要）
+    //   非必须 （设置请求头 ）
     // if api need add custom value to HTTPHeaderField
     NSDictionary *headerFieldValueDictionary = [request requestHeaderFieldValueDictionary];
     if (headerFieldValueDictionary != nil) {

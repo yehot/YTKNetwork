@@ -36,6 +36,16 @@ FOUNDATION_EXPORT void YTKLog(NSString *format, ...) NS_FORMAT_FUNCTION(1,2);
 + (BOOL)checkJson:(id)json withValidator:(id)validatorJson;
 
 // Agent在用
+//  YTKUrlFilterProtocol 协议的- (NSString *)filterUrl:(NSString *)originUrl withRequest:(YTKBaseRequest *)request;
+//  方法内在用
+/**
+ *  将传入的参数 dict 拼接到 url 后，自动加判断有无？，以 ?key1=value1&key2=value2... 形式追加
+ *
+ *  @param originUrlString <#originUrlString description#>
+ *  @param parameters      <#parameters description#>
+ *
+ *  @return <#return value description#>
+ */
 + (NSString *)urlStringWithOriginUrlString:(NSString *)originUrlString
                           appendParameters:(NSDictionary *)parameters;
 

@@ -85,10 +85,12 @@ void YTKLog(NSString *format, ...) {
 + (NSString *)urlParametersStringFromParameters:(NSDictionary *)parameters {
     NSMutableString *urlParametersString = [[NSMutableString alloc] initWithString:@""];
     if (parameters && parameters.count > 0) {
-        for (NSString *key in parameters) {
+        for (NSString *key in parameters) { // parameters.allKeys??
             NSString *value = parameters[key];
             value = [NSString stringWithFormat:@"%@",value];
             value = [self urlEncode:value];
+            
+            // 将 key value 拼接成 字符串，&key=value 的形式，（随后拼接入url作为参数）
             [urlParametersString appendFormat:@"&%@=%@", key, value];
         }
     }
@@ -100,8 +102,10 @@ void YTKLog(NSString *format, ...) {
     NSString *paraUrlString = [self urlParametersStringFromParameters:parameters];
     if (paraUrlString && paraUrlString.length > 0) {
         if ([originUrlString rangeOfString:@"?"].location != NSNotFound) {
+            // url 里已经有 「？」，直接追加到 后边
             filteredUrl = [filteredUrl stringByAppendingString:paraUrlString];
         } else {
+            // 没有「？」，加 ？拼接
             filteredUrl = [filteredUrl stringByAppendingFormat:@"?%@", [paraUrlString substringFromIndex:1]];
         }
         return filteredUrl;

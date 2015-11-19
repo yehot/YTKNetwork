@@ -145,6 +145,7 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 /// 请求的CdnURL
 - (NSString *)cdnUrl;
 
+//  请求单独指定 baseURL。如果此方法重写后，返回值不为nil，则认为此 请求对象不使用 全局默认的 统一域名（即 NetworkConfig 中的 baseDomainURL）
 /// 请求的BaseURL
 - (NSString *)baseUrl;
 
