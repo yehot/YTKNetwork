@@ -123,6 +123,7 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 /// 把block置nil来打破循环引用
 - (void)clearCompletionBlock;
 
+//  TODO: 这里考虑一个 request 对应多个 delegate 是否有这种需要？？
 //  这里改为 使用AccessoryDelegate，而不是数组，只提供一个 accessoryDelegate
 /// Request Accessory，可以hook Request的start和stop (在请求的开始、进行中、结束时，加入动作)
 - (void)addAccessory:(id<YTKRequestAccessoryDelegate>)accessory;
@@ -180,11 +181,9 @@ typedef void (^AFDownloadProgressBlock)(AFDownloadRequestOperation *operation, N
 /// 是否使用CDN的host地址
 - (BOOL)useCDN;
 
-//  TODO: 暂时未copy
 /// 用于检查JSON是否合法的对象
 - (id)jsonValidator;
 
-//  TODO: 暂时未copy
 /// 当POST的内容带有文件等富文本时使用
 - (AFConstructingBlock)constructingBodyBlock;
 

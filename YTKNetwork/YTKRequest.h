@@ -29,7 +29,7 @@
 @interface YTKRequest : YTKBaseRequest
 
 /**
- *  是否忽略缓存
+ *  忽略缓存
  */
 @property (nonatomic) BOOL ignoreCache;
 
@@ -45,6 +45,7 @@
 /// 强制更新缓存
 - (void)startWithoutCache;
 
+//  TODO: 此方法无需暴露出来
 /// 手动将其他请求的JsonResponse写入该请求的缓存
 - (void)saveJsonResponseToCacheFile:(id)jsonResponse;
 

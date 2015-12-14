@@ -35,6 +35,16 @@
 }
 
 
+//    使用时 , 重写此方法，在 block 中获取下载的进度
+- (AFDownloadProgressBlock)resumableDownloadProgressBlock {
+    AFDownloadProgressBlock block = ^(AFDownloadRequestOperation *operation, NSInteger bytesRead, long long totalBytesRead, long long totalBytesExpected, long long totalBytesReadForFile, long long totalBytesExpectedToReadForFile) {
+        
+        //  TODO: 在block 中，将进度数据 传递给页面使用
+        
+    };
+    return block;
+}
+
 //要启动断点续传功能，只需要覆盖 resumableDownloadPath方法，指定断点续传时文件的暂存路径即可。
 //如下代码将刚刚的取图片的接口改造成了支持断点续传：
 - (NSString *)resumableDownloadPath {

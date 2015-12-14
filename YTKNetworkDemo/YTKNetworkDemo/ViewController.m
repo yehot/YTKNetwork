@@ -30,7 +30,6 @@
     [self startRequestUseBlock];
     
 //    [self startRequestUseDelegate];
-    
 }
 
 #pragma mark - 使用block发起请求
@@ -40,6 +39,7 @@
     //1、请求对象
     //      1.传入请求参数，2.对象内部设置了请求方式，3，
     RegisterApi *api = [[RegisterApi alloc] initWithUsername:username password:password];
+//    [api startWithoutCache];
     [api startWithCompletionBlockWithSuccess:^(YTKBaseRequest *request) {
         // 你可以直接在这里使用 self
         NSLog(@"succeed");
@@ -50,6 +50,17 @@
         NSLog(@"failed");
         NSLog(@"%@",request.responseHeaders);
     }];
+    if ([api cacheJson]) {
+        NSLog(@"%@",[api cacheJson]);
+    }
+//
+//    dispatch_after(dispatch_time(DISPATCH_TIME_NOW, (int64_t)(15 * NSEC_PER_SEC)), dispatch_get_main_queue(), ^{
+//        if ([api cacheJson]) {
+//            NSLog(@"%@",[api cacheJson]);
+//            NSLog(@"%d",[api isCacheVersionExpired]);
+//
+//        }
+//    });
 }
 
 #pragma mark - YTKRequestDelegate

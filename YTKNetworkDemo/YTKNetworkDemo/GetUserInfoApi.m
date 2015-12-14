@@ -47,7 +47,6 @@
     return 60 * 3;
 }
 
-
 /*
 以下是更多的jsonValidator的示例：
 

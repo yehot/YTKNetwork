@@ -49,6 +49,8 @@
     return nil;
 }
 
+#pragma mark -
+
 - (void)checkDirectory:(NSString *)path {
     NSFileManager *fileManager = [NSFileManager defaultManager];
     BOOL isDir;
@@ -78,6 +80,7 @@
     NSString *pathOfLibrary = [NSSearchPathForDirectoriesInDomains(NSLibraryDirectory, NSUserDomainMask, YES) objectAtIndex:0];
     NSString *path = [pathOfLibrary stringByAppendingPathComponent:@"LazyRequestCache"];
 
+    //    TODO: 为缓存设置统一的 基础路径？？？
     // filter cache base path
     NSArray *filters = [[YTKNetworkConfig sharedInstance] cacheDirPathFilters];
     if (filters.count > 0) {
@@ -135,13 +138,16 @@
     if (!attributes) {
         YTKLog(@"Error get attributes for file at %@: %@", path, attributesRetrievalError);
         return -1;
-    }
+    }//这里使用 缓存文件上次被修改的时间 与 此刻 的时间差
     int seconds = -[[attributes fileModificationDate] timeIntervalSinceNow];
     return seconds;
 }
 
 //发起请求
 - (void)start {
+    
+    // NOTE: 如果以下 if 有一个 成立，就会 return。不会 缓存。
+    //       以下都 不成立，才能走到最下边
     if (self.ignoreCache) {
         [super start];
         return;
@@ -182,8 +188,9 @@
         return;
     }
 
+    // 缓存
     _dataFromCache = YES;
-    [self requestCompleteFilter];
+    [self requestCompleteFilter];   //保存缓存
     YTKRequest *strongSelf = self;
     [strongSelf.delegate requestFinished:strongSelf];
     if (strongSelf.successCompletionBlock) {
@@ -196,6 +203,7 @@
     [super start];
 }
 
+//  TODO: 这里用 getter方法，会导致任何时候取都不为空？？？
 - (id)cacheJson {
     if (_cacheJson) {
         return _cacheJson;
@@ -223,6 +231,8 @@
     }
 }
 
+//通过重写这个方法，实现的缓存！！
+//  父类请求前，
 - (id)responseJSONObject {
     if (_cacheJson) {
         return _cacheJson;

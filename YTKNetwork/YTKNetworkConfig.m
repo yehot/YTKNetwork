@@ -92,13 +92,13 @@
 
 
 //  TODO: 此方法不需要，只调用第一行即可
-- (NSString *)appendComponentDict:(NSDictionary *)component toOriginUrl:(NSString *)originUrl {
-    
-    [YTKNetworkPrivate urlStringWithOriginUrlString:originUrl appendParameters:component];
-    
-    
-    NSString *urlWithFilter = [YTKNetworkPrivate urlStringWithOriginUrlString:originUrl appendParameters:component];
-    return urlWithFilter;
-}
+//- (NSString *)appendComponentDict:(NSDictionary *)component toOriginUrl:(NSString *)originUrl {
+//    
+////    [YTKNetworkPrivate urlStringWithOriginUrlString:originUrl appendParameters:component];
+//    
+//    
+//    NSString *urlWithFilter = [YTKNetworkPrivate urlStringWithOriginUrlString:originUrl appendParameters:component];
+//    return urlWithFilter;
+//}
 
 @end

@@ -101,7 +101,7 @@
 /// remove self from request queue
 - (void)stop {
     [self ytk_toggleAccessoriesWillStopCallBack];
-    self.delegate = nil;
+    self.delegate = nil;        // TODO: 这里能将代理随便置为 nil ？？
     [[YTKNetworkAgent sharedInstance] cancelRequest:self];
     [self ytk_toggleAccessoriesDidStopCallBack];
 }

@@ -151,6 +151,8 @@
     } else {
         if (method == YTKRequestMethodGet) {
             if (request.resumableDownloadPath) {
+                
+                //  断点续传用于下载，都是get请求。（ANF未提供可以传 参数、url的方法）这里需要把参数拼接到url后
                 // add parameters to URL;
                 NSString *filteredUrl = [YTKNetworkPrivate urlStringWithOriginUrlString:url appendParameters:param];
 
@@ -238,6 +240,8 @@
 }
 
 - (void)cancelAllRequests {
+    
+    //  使用 拷贝 来处理，而非直接操作原对象
     NSDictionary *copyRecord = [_requestsRecord copy];
     for (NSString *key in copyRecord) {
         YTKBaseRequest *request = copyRecord[key];
@@ -245,6 +249,7 @@
     }
 }
 
+// 验证状态码，校验json
 - (BOOL)checkResult:(YTKBaseRequest *)request {
     BOOL result = request.requestOperation.response.statusCode;
     if (!result) {
@@ -270,10 +275,12 @@
     NSString *key = [self requestHashKey:operation];
     YTKBaseRequest *request = _requestsRecord[key];
     YTKLog(@"Finished Request: %@", NSStringFromClass([request class]));
-    if (request) {  //请求成功
+    if (request) {
+        // TODO: 待完成
         BOOL succeed = [self checkResult:request];
-        if (succeed) {
+        if (succeed) { //请求成功
             [request ytk_toggleAccessoriesWillStopCallBack];
+            //这里一定会写入缓存
             [request requestCompleteFilter];
             if (request.delegate != nil) {
                 [request.delegate requestFinished:request];

@@ -49,9 +49,19 @@
 - (id)requestArgument {
     return @{
         @"strRow": @1,
-        @"strDate": @"2015-11-16"
+        @"strDate": @"2015-11-20"
     };
 }
+
+#pragma mark - 缓存
+
+- (NSInteger)cacheTimeInSeconds {
+    return 10;
+}
+
+//- (BOOL)isDataFromCache {
+//    return YES;
+//}
 
 //
 //
