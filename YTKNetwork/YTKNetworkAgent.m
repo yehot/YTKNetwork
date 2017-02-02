@@ -27,7 +27,9 @@
 #import "AFNetworking.h"
 
 @implementation YTKNetworkAgent {
+    // MARK: 使用 AFN Operation Manager 发请求
     AFHTTPRequestOperationManager *_manager;
+    // 使用 dict 记录 request
     NSMutableDictionary *_requestsRecord;
 }
 
@@ -43,6 +45,7 @@
 - (id)init {
     self = [super init];
     if (self) {
+        // Agent 是单例，在 init 时初始化 AFN manager（也是单例）
         _manager = [AFHTTPRequestOperationManager manager];
         _requestsRecord = [NSMutableDictionary dictionary];
         _manager.operationQueue.maxConcurrentOperationCount = 4;
@@ -88,7 +91,7 @@
     return [NSString stringWithFormat:@"%@%@", baseUrl, detailUrl];
 }
 
-//  从请求对象取各种参数设置，配置到 AFHTTPRequestOperationManager
+//  MARK: 1.从请求对象取各种参数设置，配置到 AFN Operation Manager
 //  并用其发起请求
 - (void)addRequest:(YTKBaseRequest *)request {
     YTKRequestMethod method = [request requestMethod];
@@ -188,6 +191,7 @@
                             [self handleRequestResult:operation];
                         }];
             } else {
+                // MARK: 普通的发起请求
                 request.requestOperation = [_manager POST:url parameters:param success:^(AFHTTPRequestOperation *operation, id responseObject) {
                     [self handleRequestResult:operation];
                 }                                 failure:^(AFHTTPRequestOperation *operation, NSError *error) {

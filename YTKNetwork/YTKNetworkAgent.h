@@ -32,6 +32,11 @@
 
 + (YTKNetworkAgent *)sharedInstance;
 
+/**
+ *  Agent 通过 add request 对象，添加一个请求
+ *  内部再调用 AFN
+ *
+ */
 - (void)addRequest:(YTKBaseRequest *)request;
 
 - (void)cancelRequest:(YTKBaseRequest *)request;
