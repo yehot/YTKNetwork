@@ -402,6 +402,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 
 #pragma mark - NSOperation
 
+// MARK 1. 重写 NSOperation 的 completionBlock
 - (void)setCompletionBlock:(void (^)(void))block {
     [self.lock lock];
     if (!block) {
@@ -438,6 +439,9 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 }
 
 - (BOOL)isFinished {
+    // MARK: 5. NSOperation 的 isFinished 绑定 AFOperationFinishedState，只有  AFOperationFinished ，才会触发 self.completionBlock
+    // 在 self finish 方法中，有修改 AFOperationFinishedState
+    // 在 NSURLConnection 的 did finish load 方法中，有调用 [self finish]
     return self.state == AFOperationFinishedState;
 }
 
@@ -484,11 +488,13 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 }
 
 - (void)finish {
+    // finish 并没有直接触发 self.completionBlock
     [self.lock lock];
     self.state = AFOperationFinishedState;
     [self.lock unlock];
 
     dispatch_async(dispatch_get_main_queue(), ^{
+        // 请求完成的通知
         [[NSNotificationCenter defaultCenter] postNotificationName:AFNetworkingOperationDidFinishNotification object:self];
     });
 }
@@ -698,7 +704,6 @@ didReceiveResponse:(NSURLResponse *)response
 
 - (void)connectionDidFinishLoading:(NSURLConnection __unused *)connection {
     
-    // MARK: 4. 请求结束
     self.responseData = [self.outputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
 
     [self.outputStream close];
@@ -708,6 +713,7 @@ didReceiveResponse:(NSURLResponse *)response
 
     self.connection = nil;
 
+    // MARK: 4. 请求结束, Operation 何时结束？？？
     [self finish];
 }
 

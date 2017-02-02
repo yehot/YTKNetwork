@@ -127,7 +127,9 @@
     operation.credential = self.credential;
     operation.securityPolicy = self.securityPolicy;
 
+    // MARK: 2. 将 Success 和 failure 的 block 绑定给 op 对象
     [operation setCompletionBlockWithSuccess:success failure:failure];
+    
     operation.completionQueue = self.completionQueue;
     operation.completionGroup = self.completionGroup;
 
@@ -143,6 +145,7 @@
 {
     AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithHTTPMethod:@"GET" URLString:URLString parameters:parameters success:success failure:failure];
 
+    // MARK: 2. addOperation 方法，会自动调用 start
     [self.operationQueue addOperation:operation];
 
     return operation;

@@ -111,6 +111,12 @@ static dispatch_group_t http_request_operation_completion_group() {
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Warc-retain-cycles"
 #pragma clang diagnostic ignored "-Wgnu"
+    
+    // MARK: 0. 将 传入的 Success 、failure block ，绑定给 NSOperation 的 completionBlock
+    //  Success  将 self、self.responseObject 传出
+    //  completionBlock 方法，已经被重写
+    
+    //  self.completionBlock 什么时候会被调用、触发 ？？？
     self.completionBlock = ^{
         if (self.completionGroup) {
             dispatch_group_enter(self.completionGroup);
@@ -124,6 +130,7 @@ static dispatch_group_t http_request_operation_completion_group() {
                     });
                 }
             } else {
+                // success 的处理
                 id responseObject = self.responseObject;
                 if (self.error) {
                     if (failure) {
