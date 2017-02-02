@@ -200,6 +200,8 @@ NS_ASSUME_NONNULL_BEGIN
 ///---------------------------------------
 
 /**
+ // MARK: 使用普通 request 创建一个 op
+ 
  Creates an `AFHTTPRequestOperation`, and sets the response serializers to that of the HTTP client.
 
  @param request The request object to be loaded asynchronously during execution of the operation.
@@ -217,6 +219,8 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  Creates and runs an `AFHTTPRequestOperation` with a `GET` request.
 
+ // MARK: 每个请求回调的 Success block 中，包含一个 request Op，以及 response object （是 op 的一个属性）
+ 
  @param URLString The URL string used to create the request URL.
  @param parameters The parameters to be encoded according to the client request serializer.
  @param success A block object to be executed when the request operation finishes successfully. This block has no return value and takes two arguments: the request operation, and the response object created by the client response serializer.

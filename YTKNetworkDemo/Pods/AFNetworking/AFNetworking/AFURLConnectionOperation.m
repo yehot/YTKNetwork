@@ -164,6 +164,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
     }
 }
 
+// MARK: 请求用的线程，单例
 + (NSThread *)networkRequestThread {
     static NSThread *_networkRequestThread = nil;
     static dispatch_once_t oncePredicate;
@@ -456,9 +457,12 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
     [self.lock unlock];
 }
 
+// MARK: 0. Operation 的 start 会调用 connectiong 的 start
 - (void)operationDidStart {
     [self.lock lock];
     if (![self isCancelled]) {
+        
+        // MARK: 1. 初始化 NSURLConnection ，加到 runloop 中，在 start
         self.connection = [[NSURLConnection alloc] initWithRequest:self.request delegate:self startImmediately:NO];
 
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
@@ -468,6 +472,8 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
         }
 
         [self.outputStream open];
+        
+        // MARK: url connection 一旦 start，就归 回调处理
         [self.connection start];
     }
     [self.lock unlock];
@@ -587,7 +593,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 }
 
 #pragma mark - NSURLConnectionDelegate
-
+// MARK: 2. 网络回调的处理
 - (void)connection:(NSURLConnection *)connection
 willSendRequestForAuthenticationChallenge:(NSURLAuthenticationChallenge *)challenge
 {
@@ -649,10 +655,13 @@ didReceiveResponse:(NSURLResponse *)response
     self.response = response;
 }
 
+// MARK: 3. 处理请求返回的 data， 追加到 outputStream 中
 - (void)connection:(NSURLConnection __unused *)connection
     didReceiveData:(NSData *)data
 {
     NSUInteger length = [data length];
+    
+    // didReceiveData 会进 N 多次，这里的 while 循环不会反复启动么？？？
     while (YES) {
         NSInteger totalNumberOfBytesWritten = 0;
         if ([self.outputStream hasSpaceAvailable]) {
@@ -688,6 +697,8 @@ didReceiveResponse:(NSURLResponse *)response
 }
 
 - (void)connectionDidFinishLoading:(NSURLConnection __unused *)connection {
+    
+    // MARK: 4. 请求结束
     self.responseData = [self.outputStream propertyForKey:NSStreamDataWrittenToMemoryStreamKey];
 
     [self.outputStream close];

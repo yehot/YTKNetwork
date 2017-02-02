@@ -65,6 +65,7 @@
 
     self.reachabilityManager = [AFNetworkReachabilityManager sharedManager];
 
+    // MARK: 所有的 request 放 op 中，再放 op queue 中
     self.operationQueue = [[NSOperationQueue alloc] init];
 
     self.shouldUseCredentialStorage = YES;
@@ -119,6 +120,7 @@
                                                     success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                                                     failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
+    // MARK: 1. 入口： 所有的 request 组装成 op
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     operation.responseSerializer = self.responseSerializer;
     operation.shouldUseCredentialStorage = self.shouldUseCredentialStorage;
@@ -167,6 +169,7 @@
                          success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                          failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
+    // MARK: 将参数传给 RequestOperation 对象
     AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithHTTPMethod:@"POST" URLString:URLString parameters:parameters success:success failure:failure];
 
     [self.operationQueue addOperation:operation];
