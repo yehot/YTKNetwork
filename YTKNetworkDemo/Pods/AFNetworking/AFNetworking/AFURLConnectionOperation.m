@@ -418,6 +418,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
     if (!block) {
         [super setCompletionBlock:nil];
     } else {
+        // self 的 completionBlock 中，并未回调数据；在子类中处理的
         __weak __typeof(self)weakSelf = self;
         [super setCompletionBlock:^ {
             __strong __typeof(weakSelf)strongSelf = weakSelf;
@@ -433,6 +434,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
             });
 
             dispatch_group_notify(group, url_request_operation_completion_queue(), ^{
+                // 在 group 任务完成时，将 self 的 completion block 置为空
                 [strongSelf setCompletionBlock:nil];
             });
         }];
@@ -505,6 +507,9 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 - (void)finish {
     // finish 并没有直接触发 self.completionBlock
     [self.lock lock];
+    
+    // 而是通过修改 self.state 为 AFOperationFinishedState
+    // 在 Operation 的 isFinish 中判断，return ture 后，self.completionBlock 被触发
     self.state = AFOperationFinishedState;
     [self.lock unlock];
 
@@ -712,6 +717,7 @@ didReceiveResponse:(NSURLResponse *)response
     }
 
     dispatch_async(dispatch_get_main_queue(), ^{
+        // 已下载的 length
         self.totalBytesRead += (long long)length;
 
         if (self.downloadProgress) {
@@ -810,6 +816,7 @@ didReceiveResponse:(NSURLResponse *)response
 
 #pragma mark - NSCopying
 
+//重写copyWithZone 作用？？？
 - (id)copyWithZone:(NSZone *)zone {
     AFURLConnectionOperation *operation = [(AFURLConnectionOperation *)[[self class] allocWithZone:zone] initWithRequest:self.request];
 

@@ -24,7 +24,10 @@
 static dispatch_queue_t http_request_operation_processing_queue() {
     static dispatch_queue_t af_http_request_operation_processing_queue;
     static dispatch_once_t onceToken;
+    // AFN 中，static 变量，一般都在 dispatch_once 中初始化；
+    // 并且初始化过程放在 static 函数中，return 返回
     dispatch_once(&onceToken, ^{
+        // concurrent 并行队列
         af_http_request_operation_processing_queue = dispatch_queue_create("com.alamofire.networking.http-request.processing", DISPATCH_QUEUE_CONCURRENT);
     });
 
@@ -42,7 +45,7 @@ static dispatch_group_t http_request_operation_completion_group() {
 }
 
 #pragma mark -
-
+// MARK: 这里对父类做了个 extension ，但是没有 @implementation ？？？
 @interface AFURLConnectionOperation ()
 @property (readwrite, nonatomic, strong) NSURLRequest *request;
 @property (readwrite, nonatomic, strong) NSURLResponse *response;
@@ -52,6 +55,7 @@ static dispatch_group_t http_request_operation_completion_group() {
 @property (readwrite, nonatomic, strong) NSHTTPURLResponse *response;
 @property (readwrite, nonatomic, strong) id responseObject;
 @property (readwrite, nonatomic, strong) NSError *responseSerializationError;
+// 使用的 递归锁
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
 @end
 
@@ -114,11 +118,12 @@ static dispatch_group_t http_request_operation_completion_group() {
     
     // MARK: 0. 将 传入的 Success 、failure block ，绑定给 NSOperation 的 completionBlock
     //  Success  将 self、self.responseObject 传出
-    //  completionBlock 方法，已经被重写
     
-    //  self.completionBlock 什么时候会被调用、触发 ？？？
+    //  self.completionBlock 什么时候会被调用、触发:
+    //  在 NSOperation 的 isFinish 为 ture 时
     self.completionBlock = ^{
         if (self.completionGroup) {
+            // 使用 dispatch_group_enter , dispatch_async 中有异步线程
             dispatch_group_enter(self.completionGroup);
         }
 
@@ -169,6 +174,7 @@ static dispatch_group_t http_request_operation_completion_group() {
 
     NSMutableURLRequest *mutableURLRequest = [self.request mutableCopy];
     if ([self.response respondsToSelector:@selector(allHeaderFields)] && [[self.response allHeaderFields] valueForKey:@"ETag"]) {
+        // 加的 header 的作用？？
         [mutableURLRequest setValue:[[self.response allHeaderFields] valueForKey:@"ETag"] forHTTPHeaderField:@"If-Range"];
     }
     [mutableURLRequest setValue:[NSString stringWithFormat:@"bytes=%llu-", offset] forHTTPHeaderField:@"Range"];

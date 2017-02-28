@@ -103,9 +103,8 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, assign, nullable) dispatch_queue_t completionQueue;
 #endif
 
-/**
- The dispatch group for `completionBlock`. If `NULL` (default), a private dispatch group is used.
- */
+
+// Queue 的 completionGroup ，外界如果不设置，使用默认内部实现
 #if OS_OBJECT_USE_OBJC
 @property (nonatomic, strong, nullable) dispatch_group_t completionGroup;
 #else
