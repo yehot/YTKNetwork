@@ -120,7 +120,7 @@
                                                     success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                                                     failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    // MARK: 1. 入口： 所有的 request 组装成 op
+    // MARK: 1. 入口： 所有的 request 封装到 NSOperation 中
     AFHTTPRequestOperation *operation = [[AFHTTPRequestOperation alloc] initWithRequest:request];
     operation.responseSerializer = self.responseSerializer;
     operation.shouldUseCredentialStorage = self.shouldUseCredentialStorage;
@@ -143,6 +143,7 @@
                         success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                         failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
+    // 在 get、post 方法中，只需要 add 到 operationQueue 中，即可开启子线程，执行
     AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithHTTPMethod:@"GET" URLString:URLString parameters:parameters success:success failure:failure];
 
     // MARK: 2. addOperation 方法，会自动调用 start

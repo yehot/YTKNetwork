@@ -131,6 +131,9 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 @interface AFURLConnectionOperation ()
 @property (readwrite, nonatomic, assign) AFOperationState state;
 @property (readwrite, nonatomic, strong) NSRecursiveLock *lock;
+
+// MARK 将 .h 中的 readonly property 都 readwrite 了一遍
+// 每个 operation 持有管理一个 NSURLConnection
 @property (readwrite, nonatomic, strong) NSURLConnection *connection;
 @property (readwrite, nonatomic, strong) NSURLRequest *request;
 @property (readwrite, nonatomic, strong) NSURLResponse *response;
@@ -139,6 +142,8 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 @property (readwrite, nonatomic, copy) NSString *responseString;
 @property (readwrite, nonatomic, assign) NSStringEncoding responseStringEncoding;
 @property (readwrite, nonatomic, assign) long long totalBytesRead;
+
+// 各种 block ，对应 .h 中的 setBlock 方法
 @property (readwrite, nonatomic, copy) AFURLConnectionOperationBackgroundTaskCleanupBlock backgroundTaskCleanup;
 @property (readwrite, nonatomic, copy) AFURLConnectionOperationProgressBlock uploadProgress;
 @property (readwrite, nonatomic, copy) AFURLConnectionOperationProgressBlock downloadProgress;
@@ -157,19 +162,24 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 + (void)networkRequestThreadEntryPoint:(id)__unused object {
     @autoreleasepool {
         [[NSThread currentThread] setName:@"AFNetworking"];
-
+        // 子线程的 runloop 需要手动启动:
+        // 正常情况下thread 方法执行结束之后，线程就会退出。
+        //  为了线程可以长期复用接收消息，我们需要在 thread Selector 中给thread添加runloop
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         [runLoop addPort:[NSMachPort port] forMode:NSDefaultRunLoopMode];
         [runLoop run];
     }
 }
 
-// MARK: 请求用的线程，单例
+// MARK: 发起请求 所在的线程，单例
 + (NSThread *)networkRequestThread {
     static NSThread *_networkRequestThread = nil;
     static dispatch_once_t oncePredicate;
     dispatch_once(&oncePredicate, ^{
+        // 用单例 NSThread 的作用:
+        // 由于线程的创建和销毁非常消耗性能，大多情况下，我们需要复用一个长期运行的线程来执行任务
         _networkRequestThread = [[NSThread alloc] initWithTarget:self selector:@selector(networkRequestThreadEntryPoint:) object:nil];
+        // thread 启动后，会首先执行 selector
         [_networkRequestThread start];
     });
 
@@ -328,7 +338,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
     [self.lock lock];
     NSString *oldStateKey = AFKeyPathFromOperationState(self.state);
     NSString *newStateKey = AFKeyPathFromOperationState(state);
-
+    // KVO
     [self willChangeValueForKey:newStateKey];
     [self willChangeValueForKey:oldStateKey];
     _state = state;
@@ -449,6 +459,8 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
     return YES;
 }
 
+// add 到 operationQueue 中的 operation ，会自动调用 start 方法
+// MARK: 0  整个网络请求真正发起
 - (void)start {
     [self.lock lock];
     if ([self isCancelled]) {
@@ -456,12 +468,13 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
     } else if ([self isReady]) {
         self.state = AFOperationExecutingState;
 
+        // self 是 NSOperation ，这里为什么又将请求放在 NSThread 线程中？？？
         [self performSelector:@selector(operationDidStart) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
     }
     [self.lock unlock];
 }
 
-// MARK: 0. Operation 的 start 会调用 connectiong 的 start
+// MARK: Operation 的 start 会调用 connectiong 的 start
 - (void)operationDidStart {
     [self.lock lock];
     if (![self isCancelled]) {
@@ -471,13 +484,15 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 
         NSRunLoop *runLoop = [NSRunLoop currentRunLoop];
         for (NSString *runLoopMode in self.runLoopModes) {
+            // 将 NSURLConnection 加入到 runloop 中。具体作用？？？
+            // 类似 NSTimer 设置 mode ？？？
             [self.connection scheduleInRunLoop:runLoop forMode:runLoopMode];
             [self.outputStream scheduleInRunLoop:runLoop forMode:runLoopMode];
         }
 
         [self.outputStream open];
         
-        // MARK: url connection 一旦 start，就归 回调处理
+        // MARK: url connection 一旦 start，就进入各个 delegate 回调
         [self.connection start];
     }
     [self.lock unlock];
@@ -505,6 +520,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
         [super cancel];
 
         if ([self isExecuting]) {
+            // 在启动请求的线程上，取消请求
             [self performSelector:@selector(cancelConnection) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
         }
     }
@@ -520,7 +536,9 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
 
     if (![self isFinished]) {
         if (self.connection) {
+            // NSURLConnection 执行 cancel
             [self.connection cancel];
+            // 取消时，手动调用 NSURLConnection 的 fail 回调
             [self performSelector:@selector(connection:didFailWithError:) withObject:self.connection withObject:error];
         } else {
             // Accommodate race condition where `self.connection` has not yet been set before cancellation
