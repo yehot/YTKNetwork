@@ -429,6 +429,24 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     return [self initWithSessionConfiguration:nil];
 }
 
+//改用 NSURLSession 后，并没有再使用 RunLoop，原因？？
+
+/** 
+ 
+ １）最新版本使用NSURLSession替换NSConnection后，就不再使用RunLoop，这是为什么呢？
+ 首先先说下为什么SDWebImage之前使用NSURLConnection搭配RunLoop，具体情况是这样的在start方法中，创建了我们下载所使用的NSURLConnection对象，开启了图片的下载，同时抛出一个下载开始的通知，在当前线程（子线程或后台线程）默认下使用kCFRunLoopDefaultMode来启动RunLoop,然后我们使用NSURLConnection创建的下载操作我的理解是放到kCFRunLoopDefaultMode模式下的，而我这里创建RunLoop的目的就是放当前的下载操作放到后台线程去执行，在下载完成或下载失败后，需要停止当前线程的run loop，清除连接，并抛出下载停止的通知。如果下载成功，则会处理完整的图片数据，对其进行适当的缩放与解压缩操作，以提供给完成回调使用。
+ （２）在iOS7　NSURLSession出现后，就替换了NSURLConnection为什么要替换呢？NSURLSession相对于NSConnection优势来说
+ （1)	后台上传和下载
+ （２）可以暂停和重启网络操作
+ （３）缓存策略、session类型、任务上传/下载进行单独配置
+ （４）更多更丰富的代理模式
+ 
+ 简单来说就是即使不用RunLoop也可以实现该下载操作放入到后台线程
+ 
+ 
+ NSURLConnection使用runloop的原因是在接收数据未完成时线程就已经释放了，AF就通过runloop做的线程保活
+ 
+ */
 - (instancetype)initWithSessionConfiguration:(NSURLSessionConfiguration *)configuration {
     self = [super init];
     if (!self) {

@@ -127,9 +127,11 @@ static dispatch_group_t http_request_operation_completion_group() {
             dispatch_group_enter(self.completionGroup);
         }
 
+        // 新建异步串行队列
         dispatch_async(http_request_operation_processing_queue(), ^{
             if (self.error) {
                 if (failure) {
+                    // 在 completionBlock 中，只需要 回调 blcok（不许要考虑何时回调被触发）
                     dispatch_group_async(self.completionGroup ?: http_request_operation_completion_group(), self.completionQueue ?: dispatch_get_main_queue(), ^{
                         failure(self, self.error);
                     });

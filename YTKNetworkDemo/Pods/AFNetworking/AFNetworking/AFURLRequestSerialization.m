@@ -430,7 +430,7 @@ forHTTPHeaderField:(NSString *)field
 
     __block AFStreamingMultipartFormData *formData = [[AFStreamingMultipartFormData alloc] initWithURLRequest:mutableRequest stringEncoding:NSUTF8StringEncoding];
 
-    if (parameters) {
+    if (parameters) {   // 将 Dict 设置到 Post 的 body data 中
         for (AFQueryStringPair *pair in AFQueryStringPairsFromDictionary(parameters)) {
             NSData *data = nil;
             if ([pair.value isKindOfClass:[NSData class]]) {

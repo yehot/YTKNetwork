@@ -90,7 +90,7 @@
     _responseSerializer = responseSerializer;
 }
 
-#pragma mark -
+#pragma mark - 工厂方法
 
 - (AFHTTPRequestOperation *)HTTPRequestOperationWithHTTPMethod:(NSString *)method
                                                      URLString:(NSString *)URLString
@@ -99,6 +99,8 @@
                                                        failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
     NSError *serializationError = nil;
+    // 将 error 作为指针传入的写法，好处是？？？
+    // 不用将 error 作为 requestSerializer 的属性来用？
     NSMutableURLRequest *request = [self.requestSerializer requestWithMethod:method URLString:[[NSURL URLWithString:URLString relativeToURL:self.baseURL] absoluteString] parameters:parameters error:&serializationError];
     if (serializationError) {
         if (failure) {
@@ -128,15 +130,30 @@
     operation.securityPolicy = self.securityPolicy;
 
     // MARK: 2. 将 Success 和 failure 的 block 绑定给 op 对象
+    //    内部是如何新建线程、发起请求；如何持有 block 并在合适的时候进行回调的？？？
     [operation setCompletionBlockWithSuccess:success failure:failure];
     
+    // 即: completionBlock 中需要实现
+    /** 
+    operation.completionBlock = ^(void) {
+     
+            1. 持有 block 
+                operation 持有 completionBlock， completionBlock 内持有 success、failure
+            2. 在子线程发起请求 （线程保活）
+                1）operation 加到 operationQueue 中，子线程就创建好了
+                2） operation start 时，发起的请求
+            3. 在请求完成/失败 的时候，回调 block
+                1） operation Finish 时，operation.completionBlock() 被调用，回调
+    };
+    */
+
     operation.completionQueue = self.completionQueue;
     operation.completionGroup = self.completionGroup;
 
     return operation;
 }
 
-#pragma mark -
+#pragma mark - addOperation 到 queue
 
 - (AFHTTPRequestOperation *)GET:(NSString *)URLString
                      parameters:(id)parameters
@@ -173,7 +190,6 @@
                          success:(void (^)(AFHTTPRequestOperation *operation, id responseObject))success
                          failure:(void (^)(AFHTTPRequestOperation *operation, NSError *error))failure
 {
-    // MARK: 将参数传给 RequestOperation 对象
     AFHTTPRequestOperation *operation = [self HTTPRequestOperationWithHTTPMethod:@"POST" URLString:URLString parameters:parameters success:success failure:failure];
 
     [self.operationQueue addOperation:operation];

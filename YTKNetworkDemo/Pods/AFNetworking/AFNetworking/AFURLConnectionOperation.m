@@ -471,6 +471,7 @@ static inline BOOL AFStateTransitionIsValid(AFOperationState fromState, AFOperat
         self.state = AFOperationExecutingState;
 
         // self 是 NSOperation ，这里为什么又将请求放在 NSThread 线程中？？？
+        // NSOperation start 后，在 NSThread 线程发起请求， NSThread 加到 runloop 中
         [self performSelector:@selector(operationDidStart) onThread:[[self class] networkRequestThread] withObject:nil waitUntilDone:NO modes:[self.runLoopModes allObjects]];
     }
     [self.lock unlock];
