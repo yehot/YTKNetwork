@@ -27,7 +27,8 @@ static dispatch_queue_t http_request_operation_processing_queue() {
     // AFN 中，static 变量，一般都在 dispatch_once 中初始化；
     // 并且初始化过程放在 static 函数中，return 返回
     dispatch_once(&onceToken, ^{
-        // concurrent 并行队列
+        // dispatch_queue_create 出的是串行
+        // DISPATCH_QUEUE_CONCURRENT 的是并发
         af_http_request_operation_processing_queue = dispatch_queue_create("com.alamofire.networking.http-request.processing", DISPATCH_QUEUE_CONCURRENT);
     });
 
@@ -177,8 +178,17 @@ static dispatch_group_t http_request_operation_completion_group() {
     NSMutableURLRequest *mutableURLRequest = [self.request mutableCopy];
     if ([self.response respondsToSelector:@selector(allHeaderFields)] && [[self.response allHeaderFields] valueForKey:@"ETag"]) {
         // 加的 header 的作用？？
+        // ETag 类似请求的 MD5 值，作为标示，用于缓存
+        // HTTP 协议规格说明定义ETag为“被请求变量的实体值”
+        
+        //若请求返回的头部有ETag，则续传时要带上这个ETag，
+        //ETag用于放置文件的唯一标识，比如文件MD5值
+        //续传时带上ETag服务端可以校验相对上次请求，文件有没有变化，
+        //若有变化则返回200，回应新文件的全数据，若无变化则返回206续传。
         [mutableURLRequest setValue:[[self.response allHeaderFields] valueForKey:@"ETag"] forHTTPHeaderField:@"If-Range"];
     }
+    
+    //给当前request加Range头部，下次请求带上头部，可以从offset位置继续下载
     [mutableURLRequest setValue:[NSString stringWithFormat:@"bytes=%llu-", offset] forHTTPHeaderField:@"Range"];
     self.request = mutableURLRequest;
 }
