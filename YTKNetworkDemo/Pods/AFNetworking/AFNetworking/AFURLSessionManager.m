@@ -24,6 +24,7 @@
 
 #if (defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && __IPHONE_OS_VERSION_MAX_ALLOWED >= 70000) || (defined(__MAC_OS_X_VERSION_MAX_ALLOWED) && __MAC_OS_X_VERSION_MAX_ALLOWED >= 1090)
 
+//串行队列 
 static dispatch_queue_t url_session_manager_creation_queue() {
     static dispatch_queue_t af_url_session_manager_creation_queue;
     static dispatch_once_t onceToken;
@@ -34,6 +35,7 @@ static dispatch_queue_t url_session_manager_creation_queue() {
     return af_url_session_manager_creation_queue;
 }
 
+//并行队列
 static dispatch_queue_t url_session_manager_processing_queue() {
     static dispatch_queue_t af_url_session_manager_processing_queue;
     static dispatch_once_t onceToken;
@@ -44,6 +46,7 @@ static dispatch_queue_t url_session_manager_processing_queue() {
     return af_url_session_manager_processing_queue;
 }
 
+//dispatch_group
 static dispatch_group_t url_session_manager_completion_group() {
     static dispatch_group_t af_url_session_manager_completion_group;
     static dispatch_once_t onceToken;
@@ -109,7 +112,7 @@ typedef void (^AFURLSessionTaskCompletionHandler)(NSURLResponse *response, id re
 // AFURLSessionManager 任务的  delegate ，每个 delegate 持有一个 manager 对象
 @interface AFURLSessionManagerTaskDelegate : NSObject <NSURLSessionTaskDelegate, NSURLSessionDataDelegate, NSURLSessionDownloadDelegate>
 
-// AFURLSessionManager 是当前类？？
+// AFURLSessionManager 是当前类
 @property (nonatomic, weak) AFURLSessionManager *manager;
 @property (nonatomic, strong) NSMutableData *mutableData;
 
@@ -177,6 +180,7 @@ didCompleteWithError:(NSError *)error
     if (error) {
         userInfo[AFNetworkingTaskDidCompleteErrorKey] = error;
 
+        // A ? A:B   简写 A ?: B
         dispatch_group_async(manager.completionGroup ?: url_session_manager_completion_group(), manager.completionQueue ?: dispatch_get_main_queue(), ^{
             if (self.completionHandler) {
                 self.completionHandler(task.response, responseObject, error);
@@ -269,21 +273,14 @@ expectedTotalBytes:(int64_t)expectedTotalBytes {
 
 #pragma mark -
 
-/**
- *  A workaround for issues related to key-value observing the `state` of an `NSURLSessionTask`.
- *
- *  See:
- *  - https://github.com/AFNetworking/AFNetworking/issues/1477
- *  - https://github.com/AFNetworking/AFNetworking/issues/2638
- *  - https://github.com/AFNetworking/AFNetworking/pull/2702
- */
-
+//method_exchangeImplementations 方法替换
 static inline void af_swizzleSelector(Class theClass, SEL originalSelector, SEL swizzledSelector) {
     Method originalMethod = class_getInstanceMethod(theClass, originalSelector);
     Method swizzledMethod = class_getInstanceMethod(theClass, swizzledSelector);
     method_exchangeImplementations(originalMethod, swizzledMethod);
 }
 
+//添加 方法
 static inline BOOL af_addMethod(Class theClass, SEL selector, Method method) {
     return class_addMethod(theClass, selector,  method_getImplementation(method),  method_getTypeEncoding(method));
 }
@@ -291,6 +288,7 @@ static inline BOOL af_addMethod(Class theClass, SEL selector, Method method) {
 static NSString * const AFNSURLSessionTaskDidResumeNotification  = @"com.alamofire.networking.nsurlsessiontask.resume";
 static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofire.networking.nsurlsessiontask.suspend";
 
+//私有类，用于方法替换？？
 @interface _AFURLSessionTaskSwizzling : NSObject
 
 @end
@@ -298,44 +296,20 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 @implementation _AFURLSessionTaskSwizzling
 
 + (void)load {
-    /**
-     WARNING: Trouble Ahead
-     https://github.com/AFNetworking/AFNetworking/pull/2702
-     */
+
 
     if (NSClassFromString(@"NSURLSessionTask")) {
-        /**
+        /**     为修复系统的 bug？？
          iOS 7 and iOS 8 differ in NSURLSessionTask implementation, which makes the next bit of code a bit tricky.
-         Many Unit Tests have been built to validate as much of this behavior has possible.
-         Here is what we know:
-            - NSURLSessionTasks are implemented with class clusters, meaning the class you request from the API isn't actually the type of class you will get back.
-            - Simply referencing `[NSURLSessionTask class]` will not work. You need to ask an `NSURLSession` to actually create an object, and grab the class from there.
-            - On iOS 7, `localDataTask` is a `__NSCFLocalDataTask`, which inherits from `__NSCFLocalSessionTask`, which inherits from `__NSCFURLSessionTask`.
-            - On iOS 8, `localDataTask` is a `__NSCFLocalDataTask`, which inherits from `__NSCFLocalSessionTask`, which inherits from `NSURLSessionTask`.
-            - On iOS 7, `__NSCFLocalSessionTask` and `__NSCFURLSessionTask` are the only two classes that have their own implementations of `resume` and `suspend`, and `__NSCFLocalSessionTask` DOES NOT CALL SUPER. This means both classes need to be swizzled.
-            - On iOS 8, `NSURLSessionTask` is the only class that implements `resume` and `suspend`. This means this is the only class that needs to be swizzled.
-            - Because `NSURLSessionTask` is not involved in the class hierarchy for every version of iOS, its easier to add the swizzled methods to a dummy class and manage them there.
-        
-         Some Assumptions:
-            - No implementations of `resume` or `suspend` call super. If this were to change in a future version of iOS, we'd need to handle it.
-            - No background task classes override `resume` or `suspend`
-         
-         The current solution:
-            1) Grab an instance of `__NSCFLocalDataTask` by asking an instance of `NSURLSession` for a data task.
-            2) Grab a pointer to the original implementation of `af_resume`
-            3) Check to see if the current class has an implementation of resume. If so, continue to step 4.
-            4) Grab the super class of the current class.
-            5) Grab a pointer for the current class to the current implementation of `resume`.
-            6) Grab a pointer for the super class to the current implementation of `resume`.
-            7) If the current class implementation of `resume` is not equal to the super class implementation of `resume` AND the current implementation of `resume` is not equal to the original implementation of `af_resume`, THEN swizzle the methods
-            8) Set the current class to the super class, and repeat steps 3-8
          */
         NSURLSessionConfiguration *configuration = [NSURLSessionConfiguration ephemeralSessionConfiguration];
+        // 取出系统默认的 ephemeralSessionConfiguration 的 Session
         NSURLSession * session = [NSURLSession sessionWithConfiguration:configuration];
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wnonnull"
         NSURLSessionDataTask *localDataTask = [session dataTaskWithURL:nil];
 #pragma clang diagnostic pop
+        
         IMP originalAFResumeIMP = method_getImplementation(class_getInstanceMethod([self class], @selector(af_resume)));
         Class currentClass = [localDataTask class];
         
@@ -373,6 +347,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     return NSURLSessionTaskStateCanceling;
 }
 
+// 使用 runtime swizzle 系统的 resume 、suspend 方法，作用是？？？
 - (void)af_resume {
     NSAssert([self respondsToSelector:@selector(state)], @"Does not respond to state");
     NSURLSessionTaskState state = [self state];
@@ -397,6 +372,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 #pragma mark -
 
 @interface AFURLSessionManager ()
+
 @property (readwrite, nonatomic, strong) NSURLSessionConfiguration *sessionConfiguration;
 @property (readwrite, nonatomic, strong) NSOperationQueue *operationQueue;
 @property (readwrite, nonatomic, strong) NSURLSession *session;
@@ -434,7 +410,10 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 /** 
  
  １）最新版本使用NSURLSession替换NSConnection后，就不再使用RunLoop，这是为什么呢？
- 首先先说下为什么SDWebImage之前使用NSURLConnection搭配RunLoop，具体情况是这样的在start方法中，创建了我们下载所使用的NSURLConnection对象，开启了图片的下载，同时抛出一个下载开始的通知，在当前线程（子线程或后台线程）默认下使用kCFRunLoopDefaultMode来启动RunLoop,然后我们使用NSURLConnection创建的下载操作我的理解是放到kCFRunLoopDefaultMode模式下的，而我这里创建RunLoop的目的就是放当前的下载操作放到后台线程去执行，在下载完成或下载失败后，需要停止当前线程的run loop，清除连接，并抛出下载停止的通知。如果下载成功，则会处理完整的图片数据，对其进行适当的缩放与解压缩操作，以提供给完成回调使用。
+ 
+ 首先先说下为什么SDWebImage之前使用NSURLConnection搭配RunLoop:
+ - 具体情况是这样的在start方法中，创建了我们下载所使用的NSURLConnection对象，开启了图片的下载，同时抛出一个下载开始的通知，在当前线程（子线程或后台线程）默认下使用kCFRunLoopDefaultMode来启动RunLoop,
+ - 然后我们使用NSURLConnection创建的下载操作我的理解是放到kCFRunLoopDefaultMode模式下的，而我这里创建RunLoop的目的就是放当前的下载操作放到后台线程去执行，在下载完成或下载失败后，需要停止当前线程的run loop，清除连接，并抛出下载停止的通知。如果下载成功，则会处理完整的图片数据，对其进行适当的缩放与解压缩操作，以提供给完成回调使用。
  （２）在iOS7　NSURLSession出现后，就替换了NSURLConnection为什么要替换呢？NSURLSession相对于NSConnection优势来说
  （1)	后台上传和下载
  （２）可以暂停和重启网络操作
@@ -442,7 +421,6 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
  （４）更多更丰富的代理模式
  
  简单来说就是即使不用RunLoop也可以实现该下载操作放入到后台线程
- 
  
  NSURLConnection使用runloop的原因是在接收数据未完成时线程就已经释放了，AF就通过runloop做的线程保活
  
@@ -466,7 +444,9 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     self.operationQueue.maxConcurrentOperationCount = 1;
 
     // NSURLSession
-    self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration delegate:self delegateQueue:self.operationQueue];
+    self.session = [NSURLSession sessionWithConfiguration:self.sessionConfiguration
+                                                 delegate:self
+                                            delegateQueue:self.operationQueue];
 
     self.responseSerializer = [AFJSONResponseSerializer serializer];
 
@@ -482,8 +462,10 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     self.lock.name = AFURLSessionManagerLockName;
 
     //  getTasksWithCompletionHandler 用法？？
-    //
+    //  获取 completion handler 的回调
     [self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+        
+        // MARK: 此处的回调，会在什么时候触发？？？
         for (NSURLSessionDataTask *task in dataTasks) {
             [self addDelegateForDataTask:task completionHandler:nil];
         }
@@ -507,7 +489,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
-#pragma mark -
+#pragma mark - notification
 
 - (NSString *)taskDescriptionForSessionTasks {
     return [NSString stringWithFormat:@"%p", self];
@@ -543,6 +525,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
 
     AFURLSessionManagerTaskDelegate *delegate = nil;
     [self.lock lock];
+    // MARK: 使用 task.taskIdentifier 和 delegate 作为 key、value
     delegate = self.mutableTaskDelegatesKeyedByTaskIdentifier[@(task.taskIdentifier)];
     [self.lock unlock];
 
@@ -561,6 +544,15 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     [self.lock unlock];
 }
 
+// 用 AFURLSessionManagerTaskDelegate 持有 AFURLSessionManager 和 completionHandler
+// 然后，将 dataTask 和 TaskDelegate 建立映射，保存到 dict
+
+#pragma mark -
+
+// MARK: NSURLSessionTask 和 NSURLSession 的关系:
+// 不直接使用 alloc-init 初始化方法，task 是由一个 NSURLSession 创建的
+
+// Data Task
 - (void)addDelegateForDataTask:(NSURLSessionDataTask *)dataTask
              completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
 {
@@ -573,6 +565,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     [self setDelegate:delegate forTask:dataTask];
 }
 
+// Upload Task
 - (void)addDelegateForUploadTask:(NSURLSessionUploadTask *)uploadTask
                         progress:(NSProgress * __autoreleasing *)progress
                completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
@@ -603,6 +596,7 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     };
 
     if (progress) {
+        // 作用？？
         *progress = delegate.progress;
     }
 
@@ -655,8 +649,9 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     __block NSArray *tasks = nil;
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
     
-    // 这里是把本来异步的getTasksWithCompletionHandler方法变成了同步的方式了，通过引入信号量的方式，等待异步方法获取到tasks，然后再返回
+    // 这里是把本来异步的 getTasksWithCompletionHandler方法变成了同步的方式了，通过引入信号量的方式
     [self.session getTasksWithCompletionHandler:^(NSArray *dataTasks, NSArray *uploadTasks, NSArray *downloadTasks) {
+        
         if ([keyPath isEqualToString:NSStringFromSelector(@selector(dataTasks))]) {
             tasks = dataTasks;
         } else if ([keyPath isEqualToString:NSStringFromSelector(@selector(uploadTasks))]) {
@@ -692,8 +687,6 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     return [self tasksForKeyPath:NSStringFromSelector(_cmd)];
 }
 
-#pragma mark -
-
 - (void)invalidateSessionCancelingTasks:(BOOL)cancelPendingTasks {
     dispatch_async(dispatch_get_main_queue(), ^{
         if (cancelPendingTasks) {
@@ -704,21 +697,23 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     });
 }
 
-#pragma mark -
-
 - (void)setResponseSerializer:(id <AFURLResponseSerialization>)responseSerializer {
     NSParameterAssert(responseSerializer);
 
     _responseSerializer = responseSerializer;
 }
 
-#pragma mark -
-
 - (NSURLSessionDataTask *)dataTaskWithRequest:(NSURLRequest *)request
                             completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
 {
     __block NSURLSessionDataTask *dataTask = nil;
+    
+    // MARK: 1、请求 task 初始化的入口
+    //      在同步、串行队列中，初始化 task，并没有在这里启动请求
     dispatch_sync(url_session_manager_creation_queue(), ^{
+        
+        // MARK: code ： 核心点，用 dataTaskWithRequest 获取到 task，并不区分类型
+        // dataTask 启动后，使用 NSURLSession 的 delegate 作为数据回调的接收
         dataTask = [self.session dataTaskWithRequest:request];
     });
 
@@ -727,14 +722,14 @@ static NSString * const AFNSURLSessionTaskDidSuspendNotification = @"com.alamofi
     return dataTask;
 }
 
-#pragma mark -
-
 - (NSURLSessionUploadTask *)uploadTaskWithRequest:(NSURLRequest *)request
                                          fromFile:(NSURL *)fileURL
                                          progress:(NSProgress * __autoreleasing *)progress
                                 completionHandler:(void (^)(NSURLResponse *response, id responseObject, NSError *error))completionHandler
 {
     __block NSURLSessionUploadTask *uploadTask = nil;
+    
+    // dispatch_sync 同步
     dispatch_sync(url_session_manager_creation_queue(), ^{
         uploadTask = [self.session uploadTaskWithRequest:request fromFile:fileURL];
     });

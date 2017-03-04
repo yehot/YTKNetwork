@@ -54,7 +54,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) AFHTTPRequestSerializer <AFURLRequestSerialization> * requestSerializer;
 @property (nonatomic, strong) AFHTTPResponseSerializer <AFURLResponseSerialization> * responseSerializer;
 
-// 这里暴露 queue 的作用？？？ 允许外部设置的作用？？
 @property (nonatomic, strong) NSOperationQueue *operationQueue;
 
 #pragma mark Credential/Security

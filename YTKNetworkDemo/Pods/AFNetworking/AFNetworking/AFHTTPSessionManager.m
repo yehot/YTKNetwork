@@ -124,6 +124,7 @@
                        failure:(void (^)(NSURLSessionDataTask *task, NSError *error))failure
 {
     NSURLSessionDataTask *dataTask = [self dataTaskWithHTTPMethod:@"HEAD" URLString:URLString parameters:parameters success:^(NSURLSessionDataTask *task, __unused id responseObject) {
+        // Success 的 block 里，调用 Success ，传参 task
         if (success) {
             success(task);
         }
@@ -167,6 +168,7 @@
         return nil;
     }
 
+    // blcok 中 callback 了 函数的返回值 ……
     __block NSURLSessionDataTask *task = [self uploadTaskWithStreamedRequest:request progress:nil completionHandler:^(NSURLResponse * __unused response, id responseObject, NSError *error) {
         if (error) {
             if (failure) {
@@ -220,6 +222,7 @@
     return dataTask;
 }
 
+// 当前类中的总入口
 - (NSURLSessionDataTask *)dataTaskWithHTTPMethod:(NSString *)method
                                        URLString:(NSString *)URLString
                                       parameters:(id)parameters
@@ -242,6 +245,12 @@
     }
 
     __block NSURLSessionDataTask *dataTask = nil;
+    // 调用 父类
+    
+    // 和 connection 的回调比， callBack 合并成了一个 block
+    
+    //  dataTaskWithRequest 的 completionHandler 只有一个 blcok 回调
+    //  但是 blcok 内部，对于 Success 和 failure 分别回调
     dataTask = [self dataTaskWithRequest:request completionHandler:^(NSURLResponse * __unused response, id responseObject, NSError *error) {
         if (error) {
             if (failure) {
@@ -254,6 +263,8 @@
         }
     }];
 
+    // MARK: 获取到 data task 不直接启动请求的好处，可以对 task 进一步的配置，
+    // 然后 resume、suspend、cancel 更方便
     return dataTask;
 }
 
